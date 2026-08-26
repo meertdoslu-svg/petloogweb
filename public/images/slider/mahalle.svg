@@ -1,0 +1,6 @@
+﻿<svg xmlns='http://www.w3.org/2000/svg' width='960' height='660' viewBox='0 0 960 660'>
+  <defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='#EFE6D8'/><stop offset='1' stop-color='#D5E0C4'/></linearGradient></defs>
+  <rect width='960' height='660' fill='url(#g)'/>
+  <rect x='80' y='90' width='800' height='420' rx='40' fill='#FFFDF9' fill-opacity='0.75'/>
+  <text x='120' y='320' fill='#4A2A17' font-family='Arial' font-size='42' font-weight='700'>Mahalle Dostu</text>
+</svg>
