@@ -99,30 +99,6 @@ const TAXI_CONTENT = buildFromSections(
   ],
 );
 
-const KASKO_CONTENT = buildFromSections(
-  "PETLOOG KASKO KULLANIM ŞARTLARI",
-  "1.0",
-  "PetLoog Kasko / sağlık planı ürünlerinin kullanımına ilişkin genel şartlar. Plan özel şartları önceliklidir.",
-  [
-    {
-      title: "Kapsam",
-      body: "Teminat, limit, katılım payı ve bekleme süreleri seçilen plana göre değişir.",
-    },
-    {
-      title: "Hariç Tutulanlar",
-      body: "Plan belgesinde sayılan hastalıklar, ihmal veya bilerek verilen zararlar kapsam dışı olabilir.",
-    },
-    {
-      title: "Hak Kullanımı",
-      body: "Hak kullanımı anlaşmalı klinik veya uygulama içi süreçlerle yapılır. Sahte beyan geçersiz sayılır.",
-    },
-    {
-      title: "İptal ve Yenileme",
-      body: "İptal, yenileme ve iade koşulları plan ve ödeme yöntemine (mağaza / Iyzico) göre uygulanır.",
-    },
-  ],
-);
-
 const COMMUNITY_CONTENT = buildFromSections(
   "PETLOOG TOPLULUK KURALLARI",
   "1.0",
@@ -285,10 +261,14 @@ const LEGAL_ENTRIES: LegalEntry[] = [
     inlineContent: TAXI_CONTENT,
   },
   {
+    // Slug kept as "kasko" for URL/backward compatibility; the document is
+    // now PetGüvence (Veteriner Sağlık Planı) — a veterinary membership, not
+    // an insurance product.
     slug: "kasko",
-    title: "Kasko Kullanım Şartları",
-    description: "Pet Kasko kullanım şartları.",
-    inlineContent: KASKO_CONTENT,
+    title: "PetGüvence Kullanım Şartları",
+    description: "PetGüvence (veteriner sağlık/hizmet üyeliği) kullanım şartları.",
+    filename: "PETGUVENCE_TERMS_V1_1.md",
+    stripMarkdownHeadings: true,
   },
   {
     slug: "topluluk-kurallari",
