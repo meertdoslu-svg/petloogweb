@@ -1,4 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { SITE } from "@/lib/constants";
+
+// Canonical production domain is the apex (no "www"), e.g. "petloog.com".
+const APEX_HOST = new URL(SITE.url).hostname;
+const WWW_HOST = `www.${APEX_HOST}`;
 
 function isLocalHost(host: string | null): boolean {
   if (!host) return true;
@@ -13,6 +18,20 @@ function isLocalHost(host: string | null): boolean {
 }
 
 export function middleware(request: NextRequest) {
+  const hostHeader = request.headers.get("host");
+  const hostname = hostHeader?.split(":")[0]?.toLowerCase() ?? "";
+
+  // Permanent www -> apex redirect. Preserves pathname + query string via
+  // nextUrl.clone(). Only ever matches the exact "www" host, so it can't
+  // loop, and never fires for local/dev hosts.
+  if (hostname === WWW_HOST && !isLocalHost(hostHeader)) {
+    const url = request.nextUrl.clone();
+    url.protocol = "https:";
+    url.hostname = APEX_HOST;
+    url.port = "";
+    return NextResponse.redirect(url, 308);
+  }
+
   const response = NextResponse.next();
 
   response.headers.set("X-Content-Type-Options", "nosniff");
@@ -22,11 +41,15 @@ export function middleware(request: NextRequest) {
     "Permissions-Policy",
     "camera=(), microphone=(), geolocation=()",
   );
+  const isProd = process.env.NODE_ENV === "production";
   response.headers.set(
     "Content-Security-Policy",
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      // 'unsafe-eval' is only needed for `next dev`'s eval-based Fast
+      // Refresh/HMR runtime — the production build never eval()s script,
+      // so it's dropped there to keep the CSP's XSS protection meaningful.
+      `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"}`,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data: https://fonts.gstatic.com",
@@ -38,10 +61,7 @@ export function middleware(request: NextRequest) {
     ].join("; "),
   );
 
-  if (
-    process.env.NODE_ENV === "production" &&
-    !isLocalHost(request.headers.get("host"))
-  ) {
+  if (isProd && !isLocalHost(request.headers.get("host"))) {
     response.headers.set(
       "Strict-Transport-Security",
       "max-age=63072000; includeSubDomains; preload",

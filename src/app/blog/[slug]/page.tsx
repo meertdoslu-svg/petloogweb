@@ -21,7 +21,9 @@ export async function generateMetadata({ params }: Props) {
     title: post.title,
     description: post.excerpt,
     path: `/blog/${post.slug}`,
-    image: post.coverImage,
+    // post.coverImage is an in-page SVG illustration, not a social-share
+    // asset (most platforms don't render SVG og:image previews) — fall
+    // back to the default raster OG image for link previews.
   });
 }
 

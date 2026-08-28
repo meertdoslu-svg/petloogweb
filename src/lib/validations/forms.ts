@@ -4,6 +4,9 @@ const phoneRegex = /^(\+90|0)?[1-9][0-9]{9}$/;
 const tcRegex = /^[1-9][0-9]{10}$/;
 const ibanRegex = /^TR[0-9]{24}$/i;
 
+// "website" on every schema below is a honeypot: a real visitor never sees
+// or fills this field, so any non-empty value marks the submission as bot
+// traffic (checked server-side, see the relevant API route).
 export const contactSchema = z.object({
   name: z.string().trim().min(2, "Ad soyad en az 2 karakter olmalı").max(80),
   email: z.string().trim().email("Geçerli bir e-posta girin").max(120),
@@ -56,6 +59,7 @@ export const veterinerApplicationSchema = z.object({
     message: "Sözleşme onayı zorunludur",
   }),
   captchaToken: z.string().min(1).optional(),
+  website: z.string().max(0).optional(),
 });
 
 export type VeterinerApplicationInput = z.infer<
@@ -82,6 +86,7 @@ export const petshopApplicationSchema = z.object({
     message: "KVKK onayı zorunludur",
   }),
   captchaToken: z.string().min(1).optional(),
+  website: z.string().max(0).optional(),
 });
 
 export type PetshopApplicationInput = z.infer<typeof petshopApplicationSchema>;
@@ -92,6 +97,19 @@ export const ALLOWED_UPLOAD_TYPES = [
   "image/webp",
   "application/pdf",
 ] as const;
+
+// Storage object extensions are derived from this fixed, validated MIME
+// allow-list — never from the browser-supplied filename — so an uploaded
+// file's on-disk path can't be influenced by attacker-controlled input.
+export const EXTENSION_BY_MIME: Record<
+  (typeof ALLOWED_UPLOAD_TYPES)[number],
+  string
+> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "application/pdf": "pdf",
+};
 
 export function validateUploadMeta(file: {
   name: string;

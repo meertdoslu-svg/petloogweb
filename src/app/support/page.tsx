@@ -46,12 +46,20 @@ export default function SupportPage() {
             <ContactItem label="E-posta" value={SITE.email} href={`mailto:${SITE.email}`} />
             <ContactItem label="Adres" value={SITE.address} />
           </div>
-          <Link
-            href="/iletisim"
-            className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline"
-          >
-            İletişim formuna git →
-          </Link>
+          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+            <Link
+              href="/iletisim"
+              className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline"
+            >
+              İletişim formuna git →
+            </Link>
+            <Link
+              href="/yasal/hesap-silme"
+              className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline"
+            >
+              Hesap Silme →
+            </Link>
+          </div>
         </div>
       </div>
     </>

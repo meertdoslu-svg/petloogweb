@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   auditLog,
   getClientIp,
+  isProductionRuntime,
   rateLimit,
   sanitizeText,
   securityHeaders,
@@ -60,11 +61,38 @@ export async function POST(request: Request) {
   };
 
   const supabase = getSupabaseServerClient();
-  if (supabase) {
-    const { error } = await supabase.from("contact_messages").insert(payload);
-    if (error) {
-      auditLog("contact.insert_failed", { ip, error: error.message });
+  if (!supabase) {
+    if (isProductionRuntime()) {
+      auditLog("contact.supabase_unavailable", { ip });
+      return NextResponse.json(
+        {
+          ok: false,
+          message:
+            "Mesajınızı şu anda alamıyoruz. Lütfen daha sonra tekrar deneyin ya da bizi telefon/WhatsApp ile arayın.",
+        },
+        { status: 503, headers: securityHeaders() },
+      );
     }
+    // Dev-only convenience: no Supabase project configured locally, so
+    // there's nothing to persist to. Never reached in production — see
+    // isProductionRuntime() above, which fails closed instead.
+    auditLog("contact.dev_supabase_unconfigured", { ip });
+    return NextResponse.json(
+      { ok: true, message: "Mesajınız alındı. En kısa sürede dönüş yapacağız." },
+      { headers: securityHeaders() },
+    );
+  }
+
+  const { error } = await supabase.from("contact_messages").insert(payload);
+  if (error) {
+    auditLog("contact.insert_failed", { ip, error: error.message });
+    return NextResponse.json(
+      {
+        ok: false,
+        message: "Mesajınız kaydedilemedi. Lütfen tekrar deneyin.",
+      },
+      { status: 500, headers: securityHeaders() },
+    );
   }
 
   auditLog("contact.submitted", { ip, email: payload.email });

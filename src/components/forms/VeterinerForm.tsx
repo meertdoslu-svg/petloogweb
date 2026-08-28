@@ -20,11 +20,17 @@ const HIZMETLER = [
   "Pet Kuaför",
 ] as const;
 
-type FileMeta = { name: string; type: string; size: number };
+type SingleFileField = "vergiLevhasi" | "imzaSirkusu" | "ruhsat" | "logo";
 
 export function VeterinerForm() {
   const [status, setStatus] = useState<"form" | "loading" | "pending">("form");
   const [error, setError] = useState("");
+
+  // The real File objects live here, separate from react-hook-form's values
+  // (which only track {name,type,size} for validation/UI purposes) — these
+  // are what actually get uploaded on submit.
+  const [singleFiles, setSingleFiles] = useState<Partial<Record<SingleFileField, File>>>({});
+  const [fotograflarFiles, setFotograflarFiles] = useState<File[]>([]);
 
   const {
     register,
@@ -38,6 +44,7 @@ export function VeterinerForm() {
       hizmetTurleri: [],
       kvkkOnay: false,
       sozlesmeOnay: false,
+      website: "",
     },
   });
 
@@ -50,7 +57,7 @@ export function VeterinerForm() {
       if (!files.length) return;
 
       if (multiple) {
-        const metas: FileMeta[] = [];
+        const metas: { name: string; type: string; size: number }[] = [];
         for (const file of files) {
           const err = validateUploadMeta(file);
           if (err) {
@@ -59,7 +66,9 @@ export function VeterinerForm() {
           }
           metas.push({ name: file.name, type: file.type, size: file.size });
         }
+        setFotograflarFiles(files);
         setValue("fotograflar", metas, { shouldValidate: true });
+        setError("");
         return;
       }
 
@@ -69,6 +78,7 @@ export function VeterinerForm() {
         setError(err);
         return;
       }
+      setSingleFiles((prev) => ({ ...prev, [field as SingleFileField]: file }));
       setValue(
         field,
         { name: file.name, type: file.type, size: file.size } as never,
@@ -78,13 +88,37 @@ export function VeterinerForm() {
     };
 
   const onSubmit = handleSubmit(async (values) => {
+    if (status === "loading") return; // duplicate-click guard
     setStatus("loading");
     setError("");
     try {
+      const formData = new FormData();
+      formData.append("klinikAdi", values.klinikAdi);
+      formData.append("yetkiliVeteriner", values.yetkiliVeteriner);
+      formData.append("tcKimlik", values.tcKimlik);
+      formData.append("diplomaNo", values.diplomaNo);
+      formData.append("telefon", values.telefon);
+      formData.append("email", values.email);
+      formData.append("il", values.il);
+      formData.append("ilce", values.ilce);
+      formData.append("adres", values.adres);
+      formData.append("vergiNo", values.vergiNo);
+      formData.append("iban", values.iban);
+      formData.append("calismaSaatleri", values.calismaSaatleri);
+      formData.append("hizmetTurleri", JSON.stringify(values.hizmetTurleri));
+      formData.append("kvkkOnay", String(values.kvkkOnay));
+      formData.append("sozlesmeOnay", String(values.sozlesmeOnay));
+      formData.append("website", values.website ?? "");
+
+      if (singleFiles.vergiLevhasi) formData.append("vergiLevhasi", singleFiles.vergiLevhasi);
+      if (singleFiles.imzaSirkusu) formData.append("imzaSirkusu", singleFiles.imzaSirkusu);
+      if (singleFiles.ruhsat) formData.append("ruhsat", singleFiles.ruhsat);
+      if (singleFiles.logo) formData.append("logo", singleFiles.logo);
+      fotograflarFiles.forEach((file) => formData.append("fotograflar", file));
+
       const res = await fetch("/api/applications/veteriner", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: formData,
       });
       const data = (await res.json()) as { message?: string };
       if (!res.ok) throw new Error(data.message || "Başvuru başarısız");
@@ -280,6 +314,15 @@ export function VeterinerForm() {
           <p className="text-xs text-danger">{errors.sozlesmeOnay.message}</p>
         ) : null}
       </Section>
+
+      <input
+        type="text"
+        tabIndex={-1}
+        autoComplete="off"
+        className="hidden"
+        aria-hidden
+        {...register("website")}
+      />
 
       {error ? <p className="text-sm text-danger">{error}</p> : null}
 

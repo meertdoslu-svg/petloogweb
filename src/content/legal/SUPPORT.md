@@ -1,10 +1,10 @@
 # PetLoog — Destek
 
-**E-posta:** support@petloog.app  
-**Gizlilik / KVKK:** gizlilik@petloog.app  
-**Web:** https://petloog.app  
-**Destek URL:** https://petloog.app/support  
-**Yardım:** https://petloog.app/help
+**E-posta:** info@petloog.com  
+**Gizlilik / KVKK:** info@petloog.com  
+**Web:** https://petloog.com  
+**Destek URL:** https://petloog.com/support  
+**Yardım:** https://petloog.com/help
 
 ## Yanıt süresi
 

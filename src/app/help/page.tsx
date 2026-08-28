@@ -43,6 +43,7 @@ const QUICK_LINKS = [
   { href: "/terms", label: "Kullanım Koşulları", description: "Platform kullanımına ilişkin hukuki çerçeve." },
   { href: "/kvkk", label: "KVKK Aydınlatma Metni", description: "6698 sayılı Kanun kapsamında aydınlatma metni." },
   { href: "/iletisim", label: "İletişim", description: "Telefon, WhatsApp, e-posta ve iletişim formu." },
+  { href: "/yasal/hesap-silme", label: "Hesap Silme", description: "Hesabınızın ve verilerinizin silinmesini nasıl talep edeceğinizi öğrenin." },
 ];
 
 export default function HelpPage() {

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Breadcrumb } from "@/components/seo/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Button } from "@/components/ui/Button";
-import type { ModulePage } from "@/lib/constants";
+import { APP_STORE_LINK_VERIFIED, SITE, type ModulePage } from "@/lib/constants";
 import { breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export function ModuleLanding({ module }: { module: ModulePage }) {
@@ -11,6 +11,11 @@ export function ModuleLanding({ module }: { module: ModulePage }) {
     { label: "Sistemlerimiz", href: "/sistemlerimiz" },
     { label: module.shortTitle },
   ];
+
+  // The App Store URL isn't a verified live listing yet (see
+  // APP_STORE_LINK_VERIFIED) — never present it as a working download CTA.
+  const ctaIsUnverifiedAppStore =
+    module.ctaHref === SITE.appStore && !APP_STORE_LINK_VERIFIED;
 
   return (
     <div className="container-site py-10 md:py-14">
@@ -37,9 +42,15 @@ export function ModuleLanding({ module }: { module: ModulePage }) {
           {module.description}
         </p>
         <div className="mt-6">
-          <Link href={module.ctaHref}>
-            <Button size="lg">{module.ctaLabel}</Button>
-          </Link>
+          {ctaIsUnverifiedAppStore ? (
+            <Button size="lg" disabled title="Uygulama yakında mağazalarda">
+              Yakında
+            </Button>
+          ) : (
+            <Link href={module.ctaHref}>
+              <Button size="lg">{module.ctaLabel}</Button>
+            </Link>
+          )}
         </div>
       </header>
 
@@ -126,12 +137,21 @@ export function ModuleLanding({ module }: { module: ModulePage }) {
           PetLoog ekosisteminin bir parçası olun; süreçlerinizi dijitalleştirin.
         </p>
         <div className="mt-6">
-          <Link
-            href={module.ctaHref}
-            className="inline-flex rounded-full bg-white px-6 py-3 text-sm font-extrabold text-primary"
-          >
-            {module.ctaLabel}
-          </Link>
+          {ctaIsUnverifiedAppStore ? (
+            <span
+              className="inline-flex cursor-not-allowed rounded-full bg-white/70 px-6 py-3 text-sm font-extrabold text-primary/60"
+              title="Uygulama yakında mağazalarda"
+            >
+              Yakında
+            </span>
+          ) : (
+            <Link
+              href={module.ctaHref}
+              className="inline-flex rounded-full bg-white px-6 py-3 text-sm font-extrabold text-primary"
+            >
+              {module.ctaLabel}
+            </Link>
+          )}
         </div>
       </section>
     </div>

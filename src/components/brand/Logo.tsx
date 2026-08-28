@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -41,14 +42,12 @@ export function PetLoogMark({
         : "/brand/logo-128.png";
 
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
+    <Image
       src={src}
       alt=""
       width={size}
       height={size}
-      decoding={priority ? "sync" : "async"}
-      fetchPriority={priority ? "high" : "auto"}
+      priority={priority}
       className={cn("shrink-0 object-contain", className)}
       aria-hidden
     />

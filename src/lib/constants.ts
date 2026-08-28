@@ -1,8 +1,14 @@
+// Canonical production domain is the apex (no "www"). NEXT_PUBLIC_SITE_URL
+// can override this per-environment; the safe fallback is always the apex
+// domain so a missing env var never regresses to a non-canonical host.
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://petloog.com";
+
 export const SITE = {
   name: "PetLoog",
   tagline: "PATİ EKOSİSTEMİ",
   slogan: "Evcil dostunuz için tek platform.",
-  url: "https://www.petloog.com",
+  url: SITE_URL,
   email: "info@petloog.com",
   phone: "+90 850 000 00 00",
   whatsapp: "908500000000",
@@ -16,6 +22,13 @@ export const SITE = {
   appStore: "https://apps.apple.com/app/petloog",
   googlePlay: "https://play.google.com/store/apps/details?id=com.petloog",
 } as const;
+
+// The configured appStore URL is missing the numeric "/idNNNNNNNNNN" segment
+// every real App Store listing has, and support docs describe the app as
+// still in closed beta — so it isn't a verified public listing. Flip this
+// to true (and fix SITE.appStore above) once a real App Store URL exists.
+// Never render appStore as a working download link while this is false.
+export const APP_STORE_LINK_VERIFIED = false as const;
 
 export const NAV_LINKS = [
   { href: "/", label: "Anasayfa" },
@@ -42,6 +55,7 @@ export const FOOTER_LINKS = {
     { href: "/cerez", label: "Çerez Politikası" },
     { href: "/yasal/veteriner-sozlesmesi", label: "Veteriner Sözleşmesi" },
     { href: "/yasal/satici-sozlesmesi", label: "Satıcı Sözleşmesi" },
+    { href: "/yasal/hesap-silme", label: "Hesap Silme" },
   ],
   kayit: [
     { href: "/kayit/veteriner", label: "Veteriner Kaydı" },

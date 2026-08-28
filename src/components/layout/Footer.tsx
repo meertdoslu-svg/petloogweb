@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Logo, PetLoogMark } from "@/components/brand/Logo";
-import { FOOTER_LINKS, SITE } from "@/lib/constants";
+import { APP_STORE_LINK_VERIFIED, FOOTER_LINKS, SITE } from "@/lib/constants";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -16,7 +16,11 @@ export function Footer() {
               fazlası PetLoog’da.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
-              <StoreBadge href={SITE.appStore} label="App Store" />
+              {APP_STORE_LINK_VERIFIED ? (
+                <StoreBadge href={SITE.appStore} label="App Store" />
+              ) : (
+                <StoreBadge label="App Store" comingSoon />
+              )}
               <StoreBadge href={SITE.googlePlay} label="Google Play" />
             </div>
           </div>
@@ -63,7 +67,7 @@ export function Footer() {
             href={SITE.url}
             className="inline-flex items-center gap-2 text-sm font-semibold text-primary/75 hover:text-primary"
           >
-            www.petloog.com
+            petloog.com
             <PetLoogMark size={14} />
           </a>
           <p className="text-xs text-primary/55">
@@ -127,7 +131,26 @@ function SocialCircle({
   );
 }
 
-function StoreBadge({ href, label }: { href: string; label: string }) {
+function StoreBadge({
+  href,
+  label,
+  comingSoon = false,
+}: {
+  href?: string;
+  label: string;
+  comingSoon?: boolean;
+}) {
+  if (comingSoon || !href) {
+    return (
+      <span
+        className="rounded-full border border-primary/15 bg-white/40 px-3 py-1.5 text-xs font-bold text-primary/50"
+        aria-label={`${label} — yakında`}
+      >
+        {label} · Yakında
+      </span>
+    );
+  }
+
   return (
     <a
       href={href}

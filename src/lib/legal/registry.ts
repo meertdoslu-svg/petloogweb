@@ -198,7 +198,7 @@ const TERMS_CONTENT = buildFromSections(
     },
     {
       title: "Kullanıcı Hesabı",
-      body: "Hesap oluşturmak için doğru, güncel ve eksiksiz bilgi vermeniz gerekir. Hesap güvenliğinden (şifre, oturum cihazları) siz sorumlusunuz. Yetkisiz erişimi derhal support@petloog.app adresine bildirin.\n\nBir hesap yalnızca yetkili kullanıcıya aittir. Hesabı üçüncü kişilere devretmek, satmak veya toplu otomasyon için kullanmak yasaktır.\n\nRol bazlı hesaplar (veteriner, sürücü, satıcı, kurye) ek doğrulama, belge yükleme ve onay süreçlerine tabi olabilir. Onay verilmeden ilgili panel özellikleri kısıtlanabilir.",
+      body: "Hesap oluşturmak için doğru, güncel ve eksiksiz bilgi vermeniz gerekir. Hesap güvenliğinden (şifre, oturum cihazları) siz sorumlusunuz. Yetkisiz erişimi derhal info@petloog.com adresine bildirin.\n\nBir hesap yalnızca yetkili kullanıcıya aittir. Hesabı üçüncü kişilere devretmek, satmak veya toplu otomasyon için kullanmak yasaktır.\n\nRol bazlı hesaplar (veteriner, sürücü, satıcı, kurye) ek doğrulama, belge yükleme ve onay süreçlerine tabi olabilir. Onay verilmeden ilgili panel özellikleri kısıtlanabilir.",
     },
     {
       title: "Üyelik Koşulları",
@@ -242,7 +242,7 @@ const TERMS_CONTENT = buildFromSections(
     },
     {
       title: "Hesap Askıya Alma",
-      body: "PetLoog; bu koşulların ihlali, yasal zorunluluk, dolandırıcılık şüphesi, güvenlik riski veya üçüncü taraf hak ihlali halinde hesabı geçici veya kalıcı olarak askıya alabilir, içeriği kaldırabilir veya erişimi kısıtlayabilir.\n\nMümkün olduğu ölçüde kullanıcıya bildirim yapılır. Acil güvenlik veya yasal durumlarda önceden bildirim yapılmayabilir. İtirazlar support@petloog.app üzerinden iletilebilir.",
+      body: "PetLoog; bu koşulların ihlali, yasal zorunluluk, dolandırıcılık şüphesi, güvenlik riski veya üçüncü taraf hak ihlali halinde hesabı geçici veya kalıcı olarak askıya alabilir, içeriği kaldırabilir veya erişimi kısıtlayabilir.\n\nMümkün olduğu ölçüde kullanıcıya bildirim yapılır. Acil güvenlik veya yasal durumlarda önceden bildirim yapılmayabilir. İtirazlar info@petloog.com üzerinden iletilebilir.",
     },
     {
       title: "Sorumluluk Reddi",
@@ -254,15 +254,15 @@ const TERMS_CONTENT = buildFromSections(
     },
     {
       title: "Güncellemeler",
-      body: "PetLoog bu Kullanım Koşullarını güncelleyebilir. Önemli değişikliklerde uygulama içi bildirim, e-posta veya mağaza sürüm notları ile bilgilendirme yapılır.\n\nGüncel sürüm uygulama içinde Yasal ve Güvenlik bölümünde ve https://petloog.app/terms adresinde yayımlanır. Değişiklikten sonra Platformu kullanmaya devam etmek, yeni sürümü kabul anlamına gelebilir; zorunlu onay gereken durumlarda ayrıca onay istenir.",
+      body: "PetLoog bu Kullanım Koşullarını güncelleyebilir. Önemli değişikliklerde uygulama içi bildirim, e-posta veya mağaza sürüm notları ile bilgilendirme yapılır.\n\nGüncel sürüm uygulama içinde Yasal ve Güvenlik bölümünde ve https://petloog.com/terms adresinde yayımlanır. Değişiklikten sonra Platformu kullanmaya devam etmek, yeni sürümü kabul anlamına gelebilir; zorunlu onay gereken durumlarda ayrıca onay istenir.",
     },
     {
       title: "Uyuşmazlıklar",
-      body: "Bu koşullar Türkiye Cumhuriyeti hukukuna tabidir. Tüketiciler için 6502 sayılı Kanun ve ilgili mevzuat saklıdır.\n\nUyuşmazlıklarda öncelikle support@petloog.app üzerinden dostane çözüm aranır. Çözülemezse yetkili Türk mahkemeleri ve icra daireleri (tüketici hakem heyetleri / tüketici mahkemeleri dâhil) bakmaya yetkilidir.",
+      body: "Bu koşullar Türkiye Cumhuriyeti hukukuna tabidir. Tüketiciler için 6502 sayılı Kanun ve ilgili mevzuat saklıdır.\n\nUyuşmazlıklarda öncelikle info@petloog.com üzerinden dostane çözüm aranır. Çözülemezse yetkili Türk mahkemeleri ve icra daireleri (tüketici hakem heyetleri / tüketici mahkemeleri dâhil) bakmaya yetkilidir.",
     },
     {
       title: "İletişim",
-      body: "**PetLoog Destek**\n- E-posta: support@petloog.app\n- Gizlilik / KVKK: gizlilik@petloog.app\n- Web: https://petloog.app\n- Destek: https://petloog.app/support\n\nResmi bildirimler yazılı veya kayıtlı elektronik posta ile yapılır.",
+      body: "**PetLoog Destek**\n- E-posta: info@petloog.com\n- Gizlilik / KVKK: info@petloog.com\n- Web: https://petloog.com\n- Destek: https://petloog.com/support\n\nResmi bildirimler yazılı veya kayıtlı elektronik posta ile yapılır.",
     },
   ],
 );

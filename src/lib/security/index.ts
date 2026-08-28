@@ -52,6 +52,16 @@ export function auditLog(event: string, meta: Record<string, unknown> = {}) {
   return payload;
 }
 
+/**
+ * Production must fail closed: if a required server dependency (Supabase)
+ * isn't configured, the API must return an error rather than pretend a
+ * submission was saved. Non-production environments may stay
+ * developer-friendly (see call sites) since there's no real data to lose.
+ */
+export function isProductionRuntime() {
+  return process.env.NODE_ENV === "production";
+}
+
 export function securityHeaders(): Record<string, string> {
   return {
     "X-Content-Type-Options": "nosniff",

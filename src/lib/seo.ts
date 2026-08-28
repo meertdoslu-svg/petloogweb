@@ -7,6 +7,8 @@ type BuildMetaInput = {
   description: string;
   path?: string;
   image?: string;
+  /** Overrides the canonical URL without changing the page's own path (e.g. /gizlilik canonicalizing to /privacy). */
+  canonicalPath?: string;
   noIndex?: boolean;
 };
 
@@ -15,9 +17,11 @@ export function buildMetadata({
   description,
   path = "/",
   image = "/og-default.png",
+  canonicalPath,
   noIndex = false,
 }: BuildMetaInput): Metadata {
   const url = absoluteUrl(path);
+  const canonicalUrl = absoluteUrl(canonicalPath ?? path);
   const fullTitle = title.includes(SITE.name)
     ? title
     : `${title} | ${SITE.name}`;
@@ -25,7 +29,7 @@ export function buildMetadata({
   return {
     title: fullTitle,
     description,
-    alternates: { canonical: url },
+    alternates: { canonical: canonicalUrl },
     openGraph: {
       title: fullTitle,
       description,

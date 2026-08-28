@@ -14,7 +14,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/kayit/veteriner",
     "/kayit/petshop",
     "/kvkk",
-    "/gizlilik",
+    // "/gizlilik" is intentionally omitted: it serves the same document as
+    // "/privacy" and canonicalizes to it (see src/app/gizlilik/page.tsx),
+    // so only the canonical URL is listed here to avoid duplicate indexing.
+    // The page itself stays live and linked from the footer/Yasal Merkez.
     "/cerez",
     "/yasal",
     "/privacy",

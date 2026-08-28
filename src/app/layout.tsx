@@ -48,13 +48,13 @@ export const metadata: Metadata = {
     title: `${SITE.name} | ${SITE.slogan}`,
     description:
       "Evcil dostunuz için tek platform. PetLoog kurumsal ekosistemi.",
-    images: [{ url: "/og-default.svg", width: 1200, height: 630, alt: "PetLoog" }],
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "PetLoog" }],
   },
   twitter: {
     card: "summary_large_image",
     title: `${SITE.name} | ${SITE.slogan}`,
     description: SITE.slogan,
-    images: ["/og-default.svg"],
+    images: ["/og-default.png"],
   },
   robots: {
     index: true,

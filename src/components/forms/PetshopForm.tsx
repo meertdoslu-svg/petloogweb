@@ -11,11 +11,16 @@ import {
   type PetshopApplicationInput,
 } from "@/lib/validations/forms";
 
-type FileMeta = { name: string; type: string; size: number };
-
 export function PetshopForm() {
   const [status, setStatus] = useState<"form" | "loading" | "pending">("form");
   const [error, setError] = useState("");
+
+  // The real File objects live here, separate from react-hook-form's values
+  // (which only track {name,type,size} for validation/UI purposes) — these
+  // are what actually get uploaded on submit.
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [kapakFile, setKapakFile] = useState<File | null>(null);
+  const [belgelerFiles, setBelgelerFiles] = useState<File[]>([]);
 
   const {
     register,
@@ -27,6 +32,7 @@ export function PetshopForm() {
     defaultValues: {
       kvkkOnay: false,
       belgeler: [],
+      website: "",
     },
   });
 
@@ -37,7 +43,7 @@ export function PetshopForm() {
       if (!files.length) return;
 
       if (field === "belgeler") {
-        const metas: FileMeta[] = [];
+        const metas: { name: string; type: string; size: number }[] = [];
         for (const file of files) {
           const err = validateUploadMeta(file);
           if (err) {
@@ -46,6 +52,7 @@ export function PetshopForm() {
           }
           metas.push({ name: file.name, type: file.type, size: file.size });
         }
+        setBelgelerFiles(files);
         setValue("belgeler", metas, { shouldValidate: true });
         setError("");
         return;
@@ -57,6 +64,8 @@ export function PetshopForm() {
         setError(err);
         return;
       }
+      if (field === "logo") setLogoFile(file);
+      if (field === "kapak") setKapakFile(file);
       setValue(
         field,
         { name: file.name, type: file.type, size: file.size },
@@ -66,13 +75,33 @@ export function PetshopForm() {
     };
 
   const onSubmit = handleSubmit(async (values) => {
+    if (status === "loading") return; // duplicate-click guard
     setStatus("loading");
     setError("");
     try {
+      const formData = new FormData();
+      formData.append("magazaAdi", values.magazaAdi);
+      formData.append("yetkili", values.yetkili);
+      formData.append("telefon", values.telefon);
+      formData.append("email", values.email);
+      formData.append("vergiNo", values.vergiNo);
+      formData.append("iban", values.iban);
+      formData.append("il", values.il);
+      formData.append("ilce", values.ilce);
+      formData.append("adres", values.adres);
+      formData.append("kategori", values.kategori);
+      formData.append("calismaSaatleri", values.calismaSaatleri);
+      formData.append("teslimatBolgeleri", values.teslimatBolgeleri);
+      formData.append("kvkkOnay", String(values.kvkkOnay));
+      formData.append("website", values.website ?? "");
+
+      if (logoFile) formData.append("logo", logoFile);
+      if (kapakFile) formData.append("kapak", kapakFile);
+      belgelerFiles.forEach((file) => formData.append("belgeler", file));
+
       const res = await fetch("/api/applications/petshop", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: formData,
       });
       const data = (await res.json()) as { message?: string };
       if (!res.ok) throw new Error(data.message || "Başvuru başarısız");
@@ -203,6 +232,15 @@ export function PetshopForm() {
           <p className="text-xs text-danger">{errors.kvkkOnay.message}</p>
         ) : null}
       </Section>
+
+      <input
+        type="text"
+        tabIndex={-1}
+        autoComplete="off"
+        className="hidden"
+        aria-hidden
+        {...register("website")}
+      />
 
       {error ? <p className="text-sm text-danger">{error}</p> : null}
 

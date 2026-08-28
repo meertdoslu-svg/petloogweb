@@ -8,6 +8,10 @@ export const metadata = buildMetadata({
   title: "Gizlilik Politikası",
   description: "PetLoog gizlilik politikası.",
   path: "/gizlilik",
+  // /privacy and /gizlilik serve the same document; canonicalize to /privacy
+  // (the URL used for App Store / Google Play listings) to avoid duplicate
+  // indexing while keeping /gizlilik reachable for Turkish users.
+  canonicalPath: "/privacy",
 });
 
 export default function GizlilikPage() {
