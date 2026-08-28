@@ -6,7 +6,8 @@ import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
   title: "Gizlilik Politikası",
-  description: "PetLoog gizlilik politikası.",
+  description:
+    "PetLoog Gizlilik Politikası — kişisel verilerin toplanması, kullanılması, paylaşılması, saklanması, kullanıcı hakları ve hesap silme süreçleri.",
   path: "/privacy",
 });
 

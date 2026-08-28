@@ -306,7 +306,8 @@ const LEGAL_ENTRIES: LegalEntry[] = [
   {
     slug: "gizlilik",
     title: "Gizlilik Politikası",
-    description: "PetLoog gizlilik politikası.",
+    description:
+      "PetLoog Gizlilik Politikası — kişisel verilerin toplanması, kullanılması, paylaşılması, saklanması, kullanıcı hakları ve hesap silme süreçleri.",
     filename: "PRIVACY_POLICY.md",
   },
   {

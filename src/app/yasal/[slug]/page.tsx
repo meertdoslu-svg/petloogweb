@@ -20,6 +20,10 @@ export async function generateMetadata({ params }: Props) {
     title: document.title,
     description: document.description,
     path: `/yasal/${slug}`,
+    // /yasal/gizlilik serves the same document as /privacy and /gizlilik;
+    // canonicalize to /privacy (the App Store / Google Play listing URL) to
+    // avoid duplicate indexing while keeping the Turkish route reachable.
+    canonicalPath: slug === "gizlilik" ? "/privacy" : undefined,
   });
 }
 
