@@ -6,6 +6,13 @@ import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
+// Slugs whose canonical URL is a dedicated short route (also the URL linked
+// from the footer / Yasal Merkez and used for App Store / Google Play).
+const LEGAL_CANONICAL_OVERRIDES: Record<string, string | undefined> = {
+  gizlilik: "/privacy",
+  "kullanim-kosullari": "/terms",
+};
+
 export async function generateStaticParams() {
   return listLegalDocuments()
     .filter((doc) => !["kvkk", "gizlilik", "cerez"].includes(doc.slug))
@@ -20,10 +27,11 @@ export async function generateMetadata({ params }: Props) {
     title: document.title,
     description: document.description,
     path: `/yasal/${slug}`,
-    // /yasal/gizlilik serves the same document as /privacy and /gizlilik;
-    // canonicalize to /privacy (the App Store / Google Play listing URL) to
-    // avoid duplicate indexing while keeping the Turkish route reachable.
-    canonicalPath: slug === "gizlilik" ? "/privacy" : undefined,
+    // Some legal docs are also served from a dedicated short route that is
+    // the one linked in navigation and used for store listings. Canonicalize
+    // /yasal/<slug> to that route to avoid duplicate indexing, while keeping
+    // the /yasal/<slug> URL reachable. No redirect (avoids loops).
+    canonicalPath: LEGAL_CANONICAL_OVERRIDES[slug],
   });
 }
 

@@ -179,94 +179,6 @@ const YUVA_CONTENT = buildFromSections(
   ],
 );
 
-const TERMS_CONTENT = buildFromSections(
-  "PETLOOG KULLANIM KOŞULLARI",
-  "1.0",
-  "Bu Kullanım Koşulları, PetLoog mobil uygulaması ve ilişkili dijital hizmetlerin kullanımına ilişkin hukuki çerçeveyi belirler. Uygulamayı indirerek, hesap oluşturarak veya hizmetlerden yararlanarak bu koşulları okuduğunuzu, anladığınızı ve kabul ettiğinizi beyan edersiniz. Koşulları kabul etmiyorsanız uygulamayı kullanmamalısınız.\n\nYayın tarihi: 22 Temmuz 2026 · Son güncelleme: 22 Temmuz 2026",
-  [
-    {
-      title: "Giriş",
-      body: "PetLoog, evcil hayvan sahipleri, veteriner hekimler, sürücüler, kuryeler ve işletmeler arasında acil ihbar, sağlık bilgilendirme, market, taşıma, sahiplendirme ve topluluk özelliklerini bir araya getiren bir dijital platformdur.\n\nBu metin; Apple App Store İnceleme Yönergeleri, Google Play Geliştirici Program Politikaları ve 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) ile uyumlu olacak şekilde hazırlanmıştır. Tüketici hakları saklıdır.\n\nHizmetler Türkiye'de sunulur. Belirli özellikler coğrafi, operasyonel veya yasal kısıtlar nedeniyle sınırlı olabilir.",
-    },
-    {
-      title: "Tanımlar",
-      body: "- **PetLoog / Platform:** Mobil uygulama, arka uç sistemleri ve bağlı dijital hizmetler.\n- **Kullanıcı:** Hesap oluşturmuş veya misafir olarak Platformu kullanan gerçek kişi.\n- **İçerik:** Kullanıcıların yüklediği metin, fotoğraf, video, konum ve benzeri veriler.\n- **Pet AI:** Yapay zekâ destekli bilgilendirme özellikleri.\n- **Market:** PetLoog üzerinden sunulan ürün satış ve sipariş hizmeti.\n- **Pet Taksi:** Evcil hayvan taşıma eşleştirme hizmeti.\n- **Yuva:** Sahiplendirme ilanları ve başvuru süreçleri.\n- **Mahalle:** Topluluk, besleme noktası ve benzeri yerel özellikler.\n- **Kasko:** Platform üzerindeki evcil hayvan sağlık planı / üyelik ürünleri.\n- **PRO:** Ücretli dijital abonelik (mağaza faturalandırmasına tabi).",
-    },
-    {
-      title: "Hizmet Kapsamı",
-      body: "PetLoog; acil sokak hayvanı ihbarı ve ön değerlendirme, veteriner eşleştirme, randevu ve vaka takibi, market siparişi, Pet Taksi, Yuva, Mahalle, Kasko ve Pet AI bilgilendirme hizmetlerini sunabilir.\n\nPlatform bir aracıdır. Veteriner muayenesi, ilaç satışı, taşıma fiili ifası veya ürün tedariki ilgili bağımsız üçüncü taraflarca gerçekleştirilir. PetLoog, üçüncü tarafların mesleki veya ticari eylemlerinden doğrudan sorumlu tutulamaz; zorunlu mevzuat hükümleri saklıdır.\n\nÖzellikler sürüm, bölge ve hesap türüne göre değişebilir. Kapalı beta dönemlerinde bazı hizmetler sınırlı veya deneme niteliğinde olabilir.",
-    },
-    {
-      title: "Kullanıcı Hesabı",
-      body: "Hesap oluşturmak için doğru, güncel ve eksiksiz bilgi vermeniz gerekir. Hesap güvenliğinden (şifre, oturum cihazları) siz sorumlusunuz. Yetkisiz erişimi derhal info@petloog.com adresine bildirin.\n\nBir hesap yalnızca yetkili kullanıcıya aittir. Hesabı üçüncü kişilere devretmek, satmak veya toplu otomasyon için kullanmak yasaktır.\n\nRol bazlı hesaplar (veteriner, sürücü, satıcı, kurye) ek doğrulama, belge yükleme ve onay süreçlerine tabi olabilir. Onay verilmeden ilgili panel özellikleri kısıtlanabilir.",
-    },
-    {
-      title: "Üyelik Koşulları",
-      body: "Platformu kullanmak için **18 yaşını doldurmuş** olmanız veya yasal temsilcinizin onayı ile hareket etmeniz gerekir. 13 yaşından küçük çocuklar adına hesap açılamaz.\n\nÜyelik ücretsiz veya ücretli (PRO, Kasko, Market vb.) olabilir. Dijital abonelikler Apple App Store veya Google Play abonelik kurallarına tabidir. Fiziksel ürün ve belirli hizmet ödemeleri yetkili ödeme kuruluşları üzerinden işlenebilir.\n\nKampanyalar (örneğin erken kullanıcı denemeleri) duyurulan koşullara ve stok/kota sınırlarına bağlıdır. PetLoog kampanyayı önceden bildirimle değiştirme veya sonlandırma hakkını saklı tutar.",
-    },
-    {
-      title: "Yasaklanan Davranışlar",
-      body: "- Sahte, yanıltıcı veya kötü niyetli acil ihbar oluşturmak\n- Başkasına ait kimlik, belge, ödeme veya iletişim bilgilerini kullanmak\n- Nefret söylemi, tehdit, taciz, yasa dışı içerik paylaşmak\n- Hayvan istismarını teşvik eden veya gösteren içerik yüklemek\n- Sistemi tersine mühendislik, scraping veya hizmet kesintisi amacıyla kullanmak\n- Spam, dolandırıcılık, sahte teklif veya sahte sahiplendirme ilanı\n- İzin alınmadan konum, kamera veya mikrofon verilerini kötüye kullanmak\n- Mağaza veya ödeme sistemlerini dolandırma amacıyla kullanmak\n\nİhlal halinde içerik kaldırma, hesap askıya alma, yasal mercilere bildirim ve tazminat yolları saklıdır.",
-    },
-    {
-      title: "AI Hizmeti",
-      body: "Pet AI ve benzeri yapay zekâ özellikleri **yalnızca bilgilendirme amaçlıdır**. Veteriner hekim teşhisi, tedavi planı, reçete veya acil tıbbi müdahale yerine geçmez.\n\nÇıktılar hata içerebilir; evcil hayvanınızın durumu için yetkili veterinere başvurun. Acil şüphede en yakın kliniğe veya acil hattına başvurun.\n\nAI özelliklerinin bir kısmı PRO aboneliğine veya deneme hakkına bağlı olabilir. Kullanım, ayrı **AI Kullanım Şartları** ile birlikte okunmalıdır.",
-    },
-    {
-      title: "Veteriner Hizmetleri",
-      body: "Veteriner paneli üzerinden sunulan teklif, randevu, tedavi kaydı ve benzeri süreçler ilgili klinik / hekim sorumluluğundadır. PetLoog klinik seçimini dayatmaz; eşleştirme ve iletişim altyapısı sağlar.\n\nKullanıcı, klinik ile arasındaki mesleki ilişkiyi ve ücretlendirmeyi klinik koşullarına göre değerlendirir. Acil vakalarda Platform gecikme veya bağlantı sorunlarından doğabilecek sonuçlardan, kusuru oranında ve zorunlu hükümler çerçevesinde sorumludur.\n\nAyrıntılar **Veteriner Hizmet Şartları** belgesinde yer alır.",
-    },
-    {
-      title: "Pet Taksi",
-      body: "Pet Taksi, sürücü ile kullanıcıyı taşıma talebi için eşleştirir. Fiili taşıma sürücü tarafından gerçekleştirilir. Hayvanın güvenli taşınması, kafes/tasma uygunluğu ve doğru adres bilgisi kullanıcı ve sürücü ortak sorumluluğundadır.\n\nPlatform, rota önerisi veya konum paylaşımı sunabilir; trafik ve üçüncü taraf olaylarından sorumlu tutulamaz. Kurallar **Pet Taksi Kuralları** belgesinde detaylandırılır.",
-    },
-    {
-      title: "Market",
-      body: "Market üzerinden satılan ürünler satıcı / mağaza tarafından listelenir. Stok, fiyat, teslimat süresi ve ürün uygunluğu satıcının beyanına dayanır. Sipariş sonrası iade ve cayma hakları ilgili mevzuat ve satıcı politikalarına tabidir.\n\nPetLoog, aracı konumunda olduğu ölçüde sipariş durumunu ve ödeme akışını yönetebilir. Ayrıntılar **Market Kuralları** belgesindedir.",
-    },
-    {
-      title: "Yuva",
-      body: "Yuva; sahiplendirme ilanları, başvurular ve klinik kaynaklı aktarımlar için bir buluşma alanıdır. İlan sahibi ve başvuran, hayvanın refahına uygun, doğru bilgi vermekle yükümlüdür.\n\nPetLoog sahiplenme sözleşmesinin tarafı değildir. Uyuşmazlıklarda taraflar kendi aralarında çözüm arar; Platform kötüye kullanımı engellemek için ilanı kaldırabilir veya hesap kısıtlayabilir.",
-    },
-    {
-      title: "Mahalle",
-      body: "Mahalle özellikleri; besleme noktaları, topluluk etkileşimi ve yerel görünürlük amaçlıdır. Paylaşılan konum ve görsellerin doğruluğundan paylaşan kullanıcı sorumludur.\n\nTopluluk içinde saygılı iletişim zorunludur. Ayrıntılı davranış kuralları **Topluluk Kuralları** belgesinde düzenlenir.",
-    },
-    {
-      title: "Kasko",
-      body: "PetLoog üzerindeki Kasko / sağlık planı ürünleri, ilgili plan şartları ve klinik anlaşmaları çerçevesinde sunulur. Teminat kapsamı, limitler, bekleme süreleri ve hariç tutulan haller plan belgelerinde belirtilir.\n\nKasko bir sigorta ürünü gibi sunuluyorsa ilgili lisans ve bilgilendirme yükümlülükleri saklıdır. Detaylar **Kasko Kullanım Şartları** belgesindedir.",
-    },
-    {
-      title: "Fikri Mülkiyet",
-      body: "PetLoog markası, logosu, arayüz tasarımı, yazılım kodu ve orijinal içerikler PetLoog'a veya lisans verenlerine aittir. İzinsiz kopyalama, çoğaltma, dağıtma veya türev eser oluşturma yasaktır.\n\nKullanıcı, yüklediği İçerik üzerinde gerekli haklara sahip olduğunu beyan eder ve Platforma hizmetin sunumu için gerekli, dünya çapında, münhasır olmayan, ücret ödemesiz bir kullanım lisansı verir. Bu lisans, hesabın silinmesi talebi ve yasal saklama süreleri çerçevesinde sona erebilir.",
-    },
-    {
-      title: "Hesap Askıya Alma",
-      body: "PetLoog; bu koşulların ihlali, yasal zorunluluk, dolandırıcılık şüphesi, güvenlik riski veya üçüncü taraf hak ihlali halinde hesabı geçici veya kalıcı olarak askıya alabilir, içeriği kaldırabilir veya erişimi kısıtlayabilir.\n\nMümkün olduğu ölçüde kullanıcıya bildirim yapılır. Acil güvenlik veya yasal durumlarda önceden bildirim yapılmayabilir. İtirazlar info@petloog.com üzerinden iletilebilir.",
-    },
-    {
-      title: "Sorumluluk Reddi",
-      body: "Platform \"olduğu gibi\" ve \"mevcut haliyle\" sunulur. PetLoog; kesintisiz, hatasız veya kesintisiz erişim taahhüt etmez. Dolaylı, arızi, özel veya sonuç zararlarından; kâr kaybı, veri kaybı veya itibar kaybından, zorunlu tüketici hakları ve kusur oranı saklı kalmak kaydıyla sorumlu tutulamaz.\n\nAI çıktıları, üçüncü taraf klinik/sürücü/satıcı eylemleri ve kullanıcı tarafından sağlanan yanlış bilgiler bu sorumluluk sınırının kapsamındadır.\n\nZorunlu mevzuatın izin vermediği ölçüde hiçbir sorumluluk reddi uygulanmaz.",
-    },
-    {
-      title: "Hizmet Kesintileri",
-      body: "Bakım, güncelleme, kapasite, ağ veya mücbir sebep nedeniyle hizmetler geçici olarak kesilebilir veya yavaşlayabilir. Planlı bakım mümkün olduğunca önceden duyurulur.\n\nÖdeme, bildirim veya konum servisleri üçüncü taraf altyapılara bağlıdır; bu altyapılardaki kesintiler Platform performansını etkileyebilir.",
-    },
-    {
-      title: "Güncellemeler",
-      body: "PetLoog bu Kullanım Koşullarını güncelleyebilir. Önemli değişikliklerde uygulama içi bildirim, e-posta veya mağaza sürüm notları ile bilgilendirme yapılır.\n\nGüncel sürüm uygulama içinde Yasal ve Güvenlik bölümünde ve https://petloog.com/terms adresinde yayımlanır. Değişiklikten sonra Platformu kullanmaya devam etmek, yeni sürümü kabul anlamına gelebilir; zorunlu onay gereken durumlarda ayrıca onay istenir.",
-    },
-    {
-      title: "Uyuşmazlıklar",
-      body: "Bu koşullar Türkiye Cumhuriyeti hukukuna tabidir. Tüketiciler için 6502 sayılı Kanun ve ilgili mevzuat saklıdır.\n\nUyuşmazlıklarda öncelikle info@petloog.com üzerinden dostane çözüm aranır. Çözülemezse yetkili Türk mahkemeleri ve icra daireleri (tüketici hakem heyetleri / tüketici mahkemeleri dâhil) bakmaya yetkilidir.",
-    },
-    {
-      title: "İletişim",
-      body: "**PetLoog Destek**\n- E-posta: info@petloog.com\n- Gizlilik / KVKK: info@petloog.com\n- Web: https://petloog.com\n- Destek: https://petloog.com/support\n\nResmi bildirimler yazılı veya kayıtlı elektronik posta ile yapılır.",
-    },
-  ],
-);
-
 const ACCOUNT_DELETION_CONTENT = buildFromSections(
   "PETLOOG HESAP SİLME POLİTİKASI",
   "1.0",
@@ -294,6 +206,13 @@ const ACCOUNT_DELETION_CONTENT = buildFromSections(
 type LegalEntry = LegalDocumentMeta & {
   filename?: string;
   inlineContent?: string;
+  /**
+   * Strip Markdown ATX heading markers (`#`, `##`, …) from a file-backed
+   * document. The canonical mobile export uses `## N. Başlık` headings, while
+   * LegalDocumentView keys headings off the `N. ` numeric prefix; removing the
+   * markers changes no words of the legal text.
+   */
+  stripMarkdownHeadings?: boolean;
 };
 
 const LEGAL_ENTRIES: LegalEntry[] = [
@@ -320,7 +239,8 @@ const LEGAL_ENTRIES: LegalEntry[] = [
     slug: "kullanim-kosullari",
     title: "Kullanım Koşulları",
     description: "PetLoog kullanım koşulları.",
-    inlineContent: TERMS_CONTENT,
+    filename: "TERMS_OF_SERVICE_V1_1.md",
+    stripMarkdownHeadings: true,
   },
   {
     slug: "acik-riza",
@@ -392,16 +312,20 @@ const LEGAL_ENTRIES: LegalEntry[] = [
 
 function resolveContent(entry: LegalEntry): string {
   if (entry.inlineContent) return entry.inlineContent;
-  if (entry.filename) return readMd(entry.filename);
-  return "";
+  if (!entry.filename) return "";
+  const raw = readMd(entry.filename);
+  return entry.stripMarkdownHeadings
+    ? raw.replace(/^#{1,6}[ \t]+/gm, "")
+    : raw;
 }
 
 export function getLegalDocument(slug: string): LegalDocument | undefined {
   const entry = LEGAL_ENTRIES.find((doc) => doc.slug === slug);
   if (!entry) return undefined;
-  const { filename, inlineContent, ...meta } = entry;
+  const { filename, inlineContent, stripMarkdownHeadings, ...meta } = entry;
   void filename;
   void inlineContent;
+  void stripMarkdownHeadings;
   return {
     ...meta,
     content: resolveContent(entry),
@@ -409,9 +333,12 @@ export function getLegalDocument(slug: string): LegalDocument | undefined {
 }
 
 export function listLegalDocuments(): LegalDocumentMeta[] {
-  return LEGAL_ENTRIES.map(({ filename, inlineContent, ...meta }) => {
-    void filename;
-    void inlineContent;
-    return meta;
-  });
+  return LEGAL_ENTRIES.map(
+    ({ filename, inlineContent, stripMarkdownHeadings, ...meta }) => {
+      void filename;
+      void inlineContent;
+      void stripMarkdownHeadings;
+      return meta;
+    },
+  );
 }
