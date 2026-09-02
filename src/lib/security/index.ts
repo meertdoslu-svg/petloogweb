@@ -40,13 +40,22 @@ export function sanitizeText(input: string) {
     .trim();
 }
 
+// Vercel captures stdout/stderr as Function Logs — this is a private,
+// server-only surface (never returned to the client), so it's always safe
+// and necessary to log here, including in production. Previously this only
+// logged outside production, which meant a real production incident left
+// zero trace anywhere. Callers must keep `meta` free of secrets/PII (no
+// keys, tokens, full document contents, or raw IBAN — see call sites).
 export function auditLog(event: string, meta: Record<string, unknown> = {}) {
   const payload = {
     event,
     at: new Date().toISOString(),
     ...meta,
   };
-  if (process.env.NODE_ENV !== "production") {
+  const isFailure = /failed|error|crash/i.test(event);
+  if (isFailure) {
+    console.error("[audit]", payload);
+  } else {
     console.info("[audit]", payload);
   }
   return payload;

@@ -15,6 +15,11 @@ import {
   veterinerApplicationSchema,
 } from "@/lib/validations/forms";
 
+// Explicit, not just the current default: this route needs node:crypto
+// (randomUUID) and File/FormData handling that assume the Node.js
+// serverless runtime, not Edge.
+export const runtime = "nodejs";
+
 const BUCKET = "application-documents";
 const MAX_PHOTOS = 8;
 
@@ -54,7 +59,7 @@ export async function POST(request: Request) {
   // stored.
   const honeypot = formData.get("website");
   if (typeof honeypot === "string" && honeypot.length > 0) {
-    auditLog("veteriner.bot_blocked", { ip });
+    auditLog("application:veteriner:bot_blocked", { ip });
     return NextResponse.json(
       {
         ok: true,
@@ -110,6 +115,10 @@ export async function POST(request: Request) {
 
   const parsed = veterinerApplicationSchema.safeParse(candidate);
   if (!parsed.success) {
+    auditLog("application:veteriner:validation_failed", {
+      ip,
+      fields: Object.keys(parsed.error.flatten().fieldErrors),
+    });
     return NextResponse.json(
       {
         ok: false,
@@ -134,6 +143,7 @@ export async function POST(request: Request) {
   ]) {
     const err = validateUploadMeta(file);
     if (err) {
+      auditLog("application:veteriner:validation_failed", { ip, reason: "upload_meta" });
       return NextResponse.json(
         { ok: false, message: err },
         { status: 400, headers: securityHeaders() },
@@ -141,57 +151,67 @@ export async function POST(request: Request) {
     }
   }
 
-  const supabase = getSupabaseServerClient();
-  if (!supabase) {
-    if (isProductionRuntime()) {
-      auditLog("veteriner.supabase_unavailable", { ip });
-      return NextResponse.json(
-        {
-          ok: false,
-          message: "Başvurunuz şu anda alınamıyor. Lütfen daha sonra tekrar deneyin.",
-        },
-        { status: 503, headers: securityHeaders() },
-      );
-    }
-    // Dev-only convenience — never reached in production (see check above).
-    auditLog("veteriner.dev_supabase_unconfigured", { ip });
-    return NextResponse.json(
-      {
-        ok: true,
-        message: "Başvurunuz alındı. Admin onayı bekleniyor. (dev: Supabase yapılandırılmadı, hiçbir şey kaydedilmedi)",
-        data: { status: "pending_review" },
-      },
-      { headers: securityHeaders() },
-    );
-  }
-
-  // Narrow once into a local const so the nested closures below keep
-  // TypeScript's non-null narrowing (it doesn't propagate `supabase` itself
-  // into function declarations).
-  const client = supabase;
-  const applicationId = randomUUID();
+  // Everything below touches Supabase (client construction, Storage,
+  // Database) — all wrapped in one try/catch so ANY failure here (not just
+  // a clean {error} from the SDK, but a thrown/rejected exception from
+  // client construction or a network call) always produces a diagnosable
+  // server log entry and a clean, generic JSON response — never an opaque
+  // platform-level crash with an empty body.
+  let stage: "config" | "storage" | "database" = "config";
+  let clientRef: NonNullable<ReturnType<typeof getSupabaseServerClient>> | null = null;
   const uploadedPaths: string[] = [];
 
-  async function uploadOne(file: File, label: string) {
-    const ext = EXTENSION_BY_MIME[file.type as keyof typeof EXTENSION_BY_MIME];
-    // Storage path is fully server-generated (uuid + fixed label), never
-    // derived from the browser-supplied filename.
-    const path = `veteriner/${applicationId}/${label}-${randomUUID()}.${ext}`;
-    const { error } = await client.storage
-      .from(BUCKET)
-      .upload(path, file, { contentType: file.type, upsert: false });
-    if (error) throw new Error(error.message);
-    uploadedPaths.push(path);
-    return {
-      originalName: sanitizeText(file.name).slice(0, 180),
-      mimeType: file.type,
-      size: file.size,
-      bucket: BUCKET,
-      path,
-    };
-  }
-
   try {
+    const supabase = getSupabaseServerClient();
+    if (!supabase) {
+      if (isProductionRuntime()) {
+        auditLog("application:veteriner:config_missing", { ip });
+        return NextResponse.json(
+          {
+            ok: false,
+            message: "Başvurunuz şu anda alınamıyor. Lütfen daha sonra tekrar deneyin.",
+          },
+          { status: 503, headers: securityHeaders() },
+        );
+      }
+      // Dev-only convenience — never reached in production (see check above).
+      auditLog("application:veteriner:dev_supabase_unconfigured", { ip });
+      return NextResponse.json(
+        {
+          ok: true,
+          message: "Başvurunuz alındı. Admin onayı bekleniyor. (dev: Supabase yapılandırılmadı, hiçbir şey kaydedilmedi)",
+          data: { status: "pending_review" },
+        },
+        { headers: securityHeaders() },
+      );
+    }
+
+    // Local const so the nested closure below keeps TypeScript's non-null
+    // narrowing (it doesn't propagate the outer `let` into a function).
+    const client = supabase;
+    clientRef = client;
+    const applicationId = randomUUID();
+
+    async function uploadOne(file: File, label: string) {
+      const ext = EXTENSION_BY_MIME[file.type as keyof typeof EXTENSION_BY_MIME];
+      // Storage path is fully server-generated (uuid + fixed label), never
+      // derived from the browser-supplied filename.
+      const path = `veteriner/${applicationId}/${label}-${randomUUID()}.${ext}`;
+      const { error } = await client.storage
+        .from(BUCKET)
+        .upload(path, file, { contentType: file.type, upsert: false });
+      if (error) throw new Error(error.message);
+      uploadedPaths.push(path);
+      return {
+        originalName: sanitizeText(file.name).slice(0, 180),
+        mimeType: file.type,
+        size: file.size,
+        bucket: BUCKET,
+        path,
+      };
+    }
+
+    stage = "storage";
     const documents = {
       vergiLevhasi: await uploadOne(vergiLevhasi!, "vergi-levhasi"),
       imzaSirkusu: await uploadOne(imzaSirkusu!, "imza-sirkusu"),
@@ -202,6 +222,7 @@ export async function POST(request: Request) {
       ),
     };
 
+    stage = "database";
     const data = parsed.data;
     const row = {
       clinic_name: sanitizeText(data.klinikAdi),
@@ -228,7 +249,7 @@ export async function POST(request: Request) {
       .insert(row);
     if (insertError) throw new Error(insertError.message);
 
-    auditLog("veteriner.submitted", { ip, email: row.email });
+    auditLog("application:veteriner:submitted", { ip, email: row.email });
 
     return NextResponse.json(
       {
@@ -241,14 +262,15 @@ export async function POST(request: Request) {
   } catch (err) {
     // Don't leave orphaned private documents behind for an application that
     // was never actually recorded.
-    if (uploadedPaths.length) {
-      await client.storage
+    if (uploadedPaths.length && clientRef) {
+      await clientRef.storage
         .from(BUCKET)
         .remove(uploadedPaths)
         .catch(() => {});
     }
-    auditLog("veteriner.insert_failed", {
+    auditLog(`application:veteriner:${stage}_failed`, {
       ip,
+      stage,
       error: err instanceof Error ? err.message : String(err),
     });
     return NextResponse.json(
