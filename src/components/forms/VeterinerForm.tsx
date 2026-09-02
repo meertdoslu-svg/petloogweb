@@ -5,11 +5,15 @@ import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/Button";
+import { CityDistrictSelect } from "@/components/forms/shared/CityDistrictSelect";
+import { WorkingHoursPicker } from "@/components/forms/shared/WorkingHoursPicker";
+import { submitFormData } from "@/lib/http";
 import {
   validateUploadMeta,
   veterinerApplicationSchema,
   type VeterinerApplicationInput,
 } from "@/lib/validations/forms";
+import { DEFAULT_WORKING_HOURS } from "@/lib/validations/workingHours";
 
 const HIZMETLER = [
   "Genel Muayene",
@@ -45,10 +49,16 @@ export function VeterinerForm() {
       kvkkOnay: false,
       sozlesmeOnay: false,
       website: "",
+      il: "",
+      ilce: "",
+      workingHours: DEFAULT_WORKING_HOURS,
     },
   });
 
   const selectedServices = watch("hizmetTurleri") || [];
+  const il = watch("il");
+  const ilce = watch("ilce");
+  const workingHours = watch("workingHours");
 
   const onFile =
     (field: keyof VeterinerApplicationInput, multiple = false) =>
@@ -91,42 +101,43 @@ export function VeterinerForm() {
     if (status === "loading") return; // duplicate-click guard
     setStatus("loading");
     setError("");
-    try {
-      const formData = new FormData();
-      formData.append("klinikAdi", values.klinikAdi);
-      formData.append("yetkiliVeteriner", values.yetkiliVeteriner);
-      formData.append("tcKimlik", values.tcKimlik);
-      formData.append("diplomaNo", values.diplomaNo);
-      formData.append("telefon", values.telefon);
-      formData.append("email", values.email);
-      formData.append("il", values.il);
-      formData.append("ilce", values.ilce);
-      formData.append("adres", values.adres);
-      formData.append("vergiNo", values.vergiNo);
-      formData.append("iban", values.iban);
-      formData.append("calismaSaatleri", values.calismaSaatleri);
-      formData.append("hizmetTurleri", JSON.stringify(values.hizmetTurleri));
-      formData.append("kvkkOnay", String(values.kvkkOnay));
-      formData.append("sozlesmeOnay", String(values.sozlesmeOnay));
-      formData.append("website", values.website ?? "");
 
-      if (singleFiles.vergiLevhasi) formData.append("vergiLevhasi", singleFiles.vergiLevhasi);
-      if (singleFiles.imzaSirkusu) formData.append("imzaSirkusu", singleFiles.imzaSirkusu);
-      if (singleFiles.ruhsat) formData.append("ruhsat", singleFiles.ruhsat);
-      if (singleFiles.logo) formData.append("logo", singleFiles.logo);
-      fotograflarFiles.forEach((file) => formData.append("fotograflar", file));
+    const formData = new FormData();
+    formData.append("klinikAdi", values.klinikAdi);
+    formData.append("yetkiliVeteriner", values.yetkiliVeteriner);
+    formData.append("tcKimlik", values.tcKimlik);
+    formData.append("diplomaNo", values.diplomaNo);
+    formData.append("telefon", values.telefon);
+    formData.append("email", values.email);
+    formData.append("il", values.il);
+    formData.append("ilce", values.ilce);
+    formData.append("adres", values.adres);
+    formData.append("vergiNo", values.vergiNo);
+    formData.append("iban", values.iban);
+    formData.append("workingHours", JSON.stringify(values.workingHours));
+    formData.append("hizmetTurleri", JSON.stringify(values.hizmetTurleri));
+    formData.append("kvkkOnay", String(values.kvkkOnay));
+    formData.append("sozlesmeOnay", String(values.sozlesmeOnay));
+    formData.append("website", values.website ?? "");
 
-      const res = await fetch("/api/applications/veteriner", {
-        method: "POST",
-        body: formData,
-      });
-      const data = (await res.json()) as { message?: string };
-      if (!res.ok) throw new Error(data.message || "Başvuru başarısız");
-      setStatus("pending");
-    } catch (err) {
+    if (singleFiles.vergiLevhasi) formData.append("vergiLevhasi", singleFiles.vergiLevhasi);
+    if (singleFiles.imzaSirkusu) formData.append("imzaSirkusu", singleFiles.imzaSirkusu);
+    if (singleFiles.ruhsat) formData.append("ruhsat", singleFiles.ruhsat);
+    if (singleFiles.logo) formData.append("logo", singleFiles.logo);
+    fotograflarFiles.forEach((file) => formData.append("fotograflar", file));
+
+    const result = await submitFormData<{ message?: string }>(
+      "/api/applications/veteriner",
+      formData,
+    );
+
+    if (!result.ok) {
       setStatus("form");
-      setError(err instanceof Error ? err.message : "Bir hata oluştu");
+      setError(result.message);
+      return;
     }
+
+    setStatus("pending");
   });
 
   const pendingView = useMemo(
@@ -136,11 +147,11 @@ export function VeterinerForm() {
           ✓
         </div>
         <h2 className="text-2xl font-extrabold text-primary">
-          Admin Onayı Bekleniyor
+          Başvurunuz Alındı
         </h2>
         <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-primary/70">
-          Veteriner kayıt başvurunuz alındı. Belgeleriniz incelendikten sonra
-          bilgilendirileceksiniz.
+          Veteriner kayıt başvurunuz PetLoog ekibi tarafından incelenecektir.
+          Belgeleriniz incelendikten sonra e-posta ile bilgilendirileceksiniz.
         </p>
       </div>
     ),
@@ -178,20 +189,38 @@ export function VeterinerForm() {
       </Section>
 
       <Section title="Adres">
-        <div className="grid gap-4 md:grid-cols-2">
-          <Field label="İl" error={errors.il?.message}>
-            <input className={inputClass} {...register("il")} />
-          </Field>
-          <Field label="İlçe" error={errors.ilce?.message}>
-            <input className={inputClass} {...register("ilce")} />
-          </Field>
-        </div>
-        <Field label="Adres" error={errors.adres?.message}>
-          <textarea rows={3} className={inputClass} {...register("adres")} />
+        <CityDistrictSelect
+          il={il}
+          ilce={ilce}
+          onIlChange={(next) => {
+            setValue("il", next, { shouldValidate: true });
+            setValue("ilce", "", { shouldValidate: true });
+          }}
+          onIlceChange={(next) => setValue("ilce", next, { shouldValidate: true })}
+          ilError={errors.il?.message}
+          ilceError={errors.ilce?.message}
+        />
+        <Field label="Tam Adres" error={errors.adres?.message}>
+          <textarea
+            rows={3}
+            className={inputClass}
+            placeholder="Mahalle, cadde, sokak, bina no..."
+            {...register("adres")}
+          />
         </Field>
       </Section>
 
-      <Section title="Mali Bilgiler">
+      <Section title="Çalışma Saatleri">
+        <WorkingHoursPicker
+          value={workingHours}
+          onChange={(next) => setValue("workingHours", next, { shouldValidate: true })}
+          error={
+            (errors.workingHours as { message?: string } | undefined)?.message
+          }
+        />
+      </Section>
+
+      <Section title="Ödeme Bilgileri">
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Vergi No" error={errors.vergiNo?.message}>
             <input className={inputClass} {...register("vergiNo")} />
@@ -199,21 +228,14 @@ export function VeterinerForm() {
           <Field label="IBAN" error={errors.iban?.message}>
             <input
               className={inputClass}
-              placeholder="TRxxxxxxxxxxxxxxxxxxxxxxxx"
+              placeholder="TR00 0000 0000 0000 0000 0000 00"
               {...register("iban")}
             />
           </Field>
         </div>
       </Section>
 
-      <Section title="Hizmet & Saatler">
-        <Field label="Çalışma Saatleri" error={errors.calismaSaatleri?.message}>
-          <input
-            className={inputClass}
-            placeholder="Pzt–Cmt 09:00–19:00"
-            {...register("calismaSaatleri")}
-          />
-        </Field>
+      <Section title="Hizmetler">
         <fieldset>
           <legend className="mb-2 text-sm font-bold text-primary">
             Hizmet Türleri
@@ -263,7 +285,7 @@ export function VeterinerForm() {
             onChange={onFile("imzaSirkusu")}
           />
           <FileField
-            label="Ruhsat"
+            label="Veteriner Ruhsatı (Opsiyonel)"
             error={errors.ruhsat?.message as string | undefined}
             onChange={onFile("ruhsat")}
           />

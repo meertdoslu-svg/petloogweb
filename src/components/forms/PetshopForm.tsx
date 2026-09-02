@@ -5,11 +5,16 @@ import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/Button";
+import { CityDistrictSelect } from "@/components/forms/shared/CityDistrictSelect";
+import { NeighborhoodMultiSelect } from "@/components/forms/shared/NeighborhoodMultiSelect";
+import { WorkingHoursPicker } from "@/components/forms/shared/WorkingHoursPicker";
+import { submitFormData } from "@/lib/http";
 import {
   petshopApplicationSchema,
   validateUploadMeta,
   type PetshopApplicationInput,
 } from "@/lib/validations/forms";
+import { DEFAULT_WORKING_HOURS } from "@/lib/validations/workingHours";
 
 export function PetshopForm() {
   const [status, setStatus] = useState<"form" | "loading" | "pending">("form");
@@ -20,12 +25,14 @@ export function PetshopForm() {
   // are what actually get uploaded on submit.
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [kapakFile, setKapakFile] = useState<File | null>(null);
+  const [vergiLevhasiFile, setVergiLevhasiFile] = useState<File | null>(null);
   const [belgelerFiles, setBelgelerFiles] = useState<File[]>([]);
 
   const {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<PetshopApplicationInput>({
     resolver: zodResolver(petshopApplicationSchema),
@@ -33,11 +40,24 @@ export function PetshopForm() {
       kvkkOnay: false,
       belgeler: [],
       website: "",
+      il: "",
+      ilce: "",
+      teslimatIl: "",
+      teslimatIlce: "",
+      teslimatMahalleleri: [],
+      workingHours: DEFAULT_WORKING_HOURS,
     },
   });
 
+  const il = watch("il");
+  const ilce = watch("ilce");
+  const teslimatIl = watch("teslimatIl");
+  const teslimatIlce = watch("teslimatIlce");
+  const teslimatMahalleleri = watch("teslimatMahalleleri") || [];
+  const workingHours = watch("workingHours");
+
   const onFile =
-    (field: "logo" | "kapak" | "belgeler") =>
+    (field: "logo" | "kapak" | "vergiLevhasi" | "belgeler") =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(e.target.files || []);
       if (!files.length) return;
@@ -66,6 +86,7 @@ export function PetshopForm() {
       }
       if (field === "logo") setLogoFile(file);
       if (field === "kapak") setKapakFile(file);
+      if (field === "vergiLevhasi") setVergiLevhasiFile(file);
       setValue(
         field,
         { name: file.name, type: file.type, size: file.size },
@@ -78,38 +99,45 @@ export function PetshopForm() {
     if (status === "loading") return; // duplicate-click guard
     setStatus("loading");
     setError("");
-    try {
-      const formData = new FormData();
-      formData.append("magazaAdi", values.magazaAdi);
-      formData.append("yetkili", values.yetkili);
-      formData.append("telefon", values.telefon);
-      formData.append("email", values.email);
-      formData.append("vergiNo", values.vergiNo);
-      formData.append("iban", values.iban);
-      formData.append("il", values.il);
-      formData.append("ilce", values.ilce);
-      formData.append("adres", values.adres);
-      formData.append("kategori", values.kategori);
-      formData.append("calismaSaatleri", values.calismaSaatleri);
-      formData.append("teslimatBolgeleri", values.teslimatBolgeleri);
-      formData.append("kvkkOnay", String(values.kvkkOnay));
-      formData.append("website", values.website ?? "");
 
-      if (logoFile) formData.append("logo", logoFile);
-      if (kapakFile) formData.append("kapak", kapakFile);
-      belgelerFiles.forEach((file) => formData.append("belgeler", file));
+    const formData = new FormData();
+    formData.append("magazaAdi", values.magazaAdi);
+    formData.append("yetkili", values.yetkili);
+    formData.append("telefon", values.telefon);
+    formData.append("email", values.email);
+    formData.append("vergiNo", values.vergiNo);
+    formData.append("iban", values.iban);
+    formData.append("il", values.il);
+    formData.append("ilce", values.ilce);
+    formData.append("adres", values.adres);
+    formData.append("kategori", values.kategori);
+    formData.append("workingHours", JSON.stringify(values.workingHours));
+    formData.append("teslimatIl", values.teslimatIl);
+    formData.append("teslimatIlce", values.teslimatIlce);
+    formData.append(
+      "teslimatMahalleleri",
+      JSON.stringify(values.teslimatMahalleleri),
+    );
+    formData.append("kvkkOnay", String(values.kvkkOnay));
+    formData.append("website", values.website ?? "");
 
-      const res = await fetch("/api/applications/petshop", {
-        method: "POST",
-        body: formData,
-      });
-      const data = (await res.json()) as { message?: string };
-      if (!res.ok) throw new Error(data.message || "Başvuru başarısız");
-      setStatus("pending");
-    } catch (err) {
+    if (logoFile) formData.append("logo", logoFile);
+    if (kapakFile) formData.append("kapak", kapakFile);
+    if (vergiLevhasiFile) formData.append("vergiLevhasi", vergiLevhasiFile);
+    belgelerFiles.forEach((file) => formData.append("belgeler", file));
+
+    const result = await submitFormData<{ message?: string }>(
+      "/api/applications/petshop",
+      formData,
+    );
+
+    if (!result.ok) {
       setStatus("form");
-      setError(err instanceof Error ? err.message : "Bir hata oluştu");
+      setError(result.message);
+      return;
     }
+
+    setStatus("pending");
   });
 
   const pendingView = useMemo(
@@ -119,11 +147,11 @@ export function PetshopForm() {
           ✓
         </div>
         <h2 className="text-2xl font-extrabold text-primary">
-          Admin Onayı Bekleniyor
+          Başvurunuz Alındı
         </h2>
         <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-primary/70">
-          PetShop kayıt başvurunuz alındı. İnceleme tamamlandığında e-posta ile
-          bilgilendirileceksiniz.
+          PetShop kayıt başvurunuz PetLoog ekibi tarafından incelenecektir.
+          İnceleme tamamlandığında e-posta ile bilgilendirileceksiniz.
         </p>
       </div>
     ),
@@ -134,7 +162,7 @@ export function PetshopForm() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-5" noValidate>
-      <Section title="Mağaza Bilgileri">
+      <Section title="İşletme Bilgileri">
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Mağaza Adı" error={errors.magazaAdi?.message}>
             <input className={inputClass} {...register("magazaAdi")} />
@@ -158,46 +186,87 @@ export function PetshopForm() {
         </div>
       </Section>
 
-      <Section title="Adres & Teslimat">
-        <div className="grid gap-4 md:grid-cols-2">
-          <Field label="İl" error={errors.il?.message}>
-            <input className={inputClass} {...register("il")} />
-          </Field>
-          <Field label="İlçe" error={errors.ilce?.message}>
-            <input className={inputClass} {...register("ilce")} />
-          </Field>
-        </div>
-        <Field label="Adres" error={errors.adres?.message}>
-          <textarea rows={3} className={inputClass} {...register("adres")} />
-        </Field>
-        <Field
-          label="Teslimat Bölgeleri"
-          error={errors.teslimatBolgeleri?.message}
-        >
+      <Section title="Adres">
+        <CityDistrictSelect
+          il={il}
+          ilce={ilce}
+          onIlChange={(next) => {
+            setValue("il", next, { shouldValidate: true });
+            setValue("ilce", "", { shouldValidate: true });
+          }}
+          onIlceChange={(next) => setValue("ilce", next, { shouldValidate: true })}
+          ilError={errors.il?.message}
+          ilceError={errors.ilce?.message}
+        />
+        <Field label="Tam Adres" error={errors.adres?.message}>
           <textarea
-            rows={2}
+            rows={3}
             className={inputClass}
-            placeholder="Kadıköy, Üsküdar, Ataşehir..."
-            {...register("teslimatBolgeleri")}
+            placeholder="Mahalle, cadde, sokak, bina no..."
+            {...register("adres")}
           />
-        </Field>
-        <Field label="Çalışma Saatleri" error={errors.calismaSaatleri?.message}>
-          <input className={inputClass} {...register("calismaSaatleri")} />
         </Field>
       </Section>
 
-      <Section title="Mali Bilgiler">
+      <Section title="Teslimat Bölgeleri">
+        <p className="text-sm text-primary/60">
+          Mağazanızın teslimat yaptığı il, ilçe ve mahalleleri seçin — bu,
+          işletme adresinizden farklı olabilir.
+        </p>
+        <CityDistrictSelect
+          il={teslimatIl}
+          ilce={teslimatIlce}
+          onIlChange={(next) => {
+            setValue("teslimatIl", next, { shouldValidate: true });
+            setValue("teslimatIlce", "", { shouldValidate: true });
+            setValue("teslimatMahalleleri", [], { shouldValidate: true });
+          }}
+          onIlceChange={(next) => {
+            setValue("teslimatIlce", next, { shouldValidate: true });
+            setValue("teslimatMahalleleri", [], { shouldValidate: true });
+          }}
+          ilLabel="Teslimat İli"
+          ilceLabel="Teslimat İlçesi"
+          ilError={errors.teslimatIl?.message}
+          ilceError={errors.teslimatIlce?.message}
+        />
+        <NeighborhoodMultiSelect
+          il={teslimatIl}
+          ilce={teslimatIlce}
+          selected={teslimatMahalleleri}
+          onChange={(next) =>
+            setValue("teslimatMahalleleri", next, { shouldValidate: true })
+          }
+          error={errors.teslimatMahalleleri?.message as string | undefined}
+        />
+      </Section>
+
+      <Section title="Çalışma Saatleri">
+        <WorkingHoursPicker
+          value={workingHours}
+          onChange={(next) => setValue("workingHours", next, { shouldValidate: true })}
+          error={
+            (errors.workingHours as { message?: string } | undefined)?.message
+          }
+        />
+      </Section>
+
+      <Section title="Ödeme Bilgileri">
         <div className="grid gap-4 md:grid-cols-2">
           <Field label="Vergi No" error={errors.vergiNo?.message}>
             <input className={inputClass} {...register("vergiNo")} />
           </Field>
           <Field label="IBAN" error={errors.iban?.message}>
-            <input className={inputClass} {...register("iban")} />
+            <input
+              className={inputClass}
+              placeholder="TR00 0000 0000 0000 0000 0000 00"
+              {...register("iban")}
+            />
           </Field>
         </div>
       </Section>
 
-      <Section title="Görseller & Belgeler">
+      <Section title="Görseller">
         <div className="grid gap-4 md:grid-cols-2">
           <FileField
             label="Logo"
@@ -209,8 +278,18 @@ export function PetshopForm() {
             error={errors.kapak?.message as string | undefined}
             onChange={onFile("kapak")}
           />
+        </div>
+      </Section>
+
+      <Section title="Belgeler">
+        <div className="grid gap-4 md:grid-cols-2">
           <FileField
-            label="Belgeler"
+            label="Vergi Levhası"
+            error={errors.vergiLevhasi?.message as string | undefined}
+            onChange={onFile("vergiLevhasi")}
+          />
+          <FileField
+            label="Diğer Belgeler (Opsiyonel)"
             multiple
             error={errors.belgeler?.message as string | undefined}
             onChange={onFile("belgeler")}

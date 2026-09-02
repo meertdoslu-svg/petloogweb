@@ -1,8 +1,25 @@
 import { z } from "zod";
+import { isValidCity, isValidDistrict } from "@/lib/data/turkeyLocations";
+import { isValidIbanChecksum, isValidTrIbanFormat, normalizeIban } from "@/lib/validations/iban";
+import { workingHoursSchema } from "@/lib/validations/workingHours";
 
 const phoneRegex = /^(\+90|0)?[1-9][0-9]{9}$/;
 const tcRegex = /^[1-9][0-9]{10}$/;
-const ibanRegex = /^TR[0-9]{24}$/i;
+
+const ibanSchema = z
+  .string()
+  .trim()
+  .transform((v) => normalizeIban(v))
+  .refine((v) => isValidTrIbanFormat(v), "Geçerli bir Türkiye IBAN'ı girin.")
+  .refine((v) => isValidIbanChecksum(v), "Geçerli bir Türkiye IBAN'ı girin.");
+
+const citySchema = z
+  .string()
+  .trim()
+  .min(1, "İl seçin")
+  .refine((v) => isValidCity(v), "Geçerli bir il seçin");
+
+const districtSchema = z.string().trim().min(1, "İlçe seçin");
 
 // "website" on every schema below is a honeypot: a real visitor never sees
 // or fills this field, so any non-empty value marks the submission as bot
@@ -30,64 +47,85 @@ const fileMetaSchema = z.object({
   size: z.number().positive().max(8 * 1024 * 1024, "Dosya en fazla 8MB olabilir"),
 });
 
-export const veterinerApplicationSchema = z.object({
-  klinikAdi: z.string().trim().min(2).max(120),
-  yetkiliVeteriner: z.string().trim().min(2).max(120),
-  tcKimlik: z.string().trim().regex(tcRegex, "Geçerli TC Kimlik No girin"),
-  diplomaNo: z.string().trim().min(3).max(40),
-  telefon: z
-    .string()
-    .trim()
-    .regex(phoneRegex, "Geçerli telefon girin"),
-  email: z.string().trim().email(),
-  il: z.string().trim().min(2).max(40),
-  ilce: z.string().trim().min(2).max(40),
-  adres: z.string().trim().min(10).max(300),
-  vergiNo: z.string().trim().min(10).max(11),
-  iban: z.string().trim().regex(ibanRegex, "Geçerli TR IBAN girin"),
-  calismaSaatleri: z.string().trim().min(3).max(200),
-  hizmetTurleri: z.array(z.string()).min(1, "En az bir hizmet seçin"),
-  vergiLevhasi: fileMetaSchema,
-  imzaSirkusu: fileMetaSchema,
-  ruhsat: fileMetaSchema,
-  logo: fileMetaSchema.optional(),
-  fotograflar: z.array(fileMetaSchema).max(8).optional(),
-  kvkkOnay: z.boolean().refine((v) => v === true, {
-    message: "KVKK onayı zorunludur",
-  }),
-  sozlesmeOnay: z.boolean().refine((v) => v === true, {
-    message: "Sözleşme onayı zorunludur",
-  }),
-  captchaToken: z.string().min(1).optional(),
-  website: z.string().max(0).optional(),
-});
+export const veterinerApplicationSchema = z
+  .object({
+    klinikAdi: z.string().trim().min(2).max(120),
+    yetkiliVeteriner: z.string().trim().min(2).max(120),
+    tcKimlik: z.string().trim().regex(tcRegex, "Geçerli TC Kimlik No girin"),
+    diplomaNo: z.string().trim().min(3).max(40),
+    telefon: z
+      .string()
+      .trim()
+      .regex(phoneRegex, "Geçerli telefon girin"),
+    email: z.string().trim().email(),
+    il: citySchema,
+    ilce: districtSchema,
+    adres: z.string().trim().min(10).max(300),
+    vergiNo: z.string().trim().min(10).max(11),
+    iban: ibanSchema,
+    workingHours: workingHoursSchema,
+    hizmetTurleri: z.array(z.string()).min(1, "En az bir hizmet seçin"),
+    vergiLevhasi: fileMetaSchema,
+    imzaSirkusu: fileMetaSchema,
+    // Veteriner Ruhsatı is optional — the application can be submitted
+    // without it.
+    ruhsat: fileMetaSchema.optional(),
+    logo: fileMetaSchema.optional(),
+    fotograflar: z.array(fileMetaSchema).max(8).optional(),
+    kvkkOnay: z.boolean().refine((v) => v === true, {
+      message: "KVKK onayı zorunludur",
+    }),
+    sozlesmeOnay: z.boolean().refine((v) => v === true, {
+      message: "Sözleşme onayı zorunludur",
+    }),
+    captchaToken: z.string().min(1).optional(),
+    website: z.string().max(0).optional(),
+  })
+  .refine((data) => isValidDistrict(data.il, data.ilce), {
+    message: "Seçilen ilçe bu ile ait değil",
+    path: ["ilce"],
+  });
 
 export type VeterinerApplicationInput = z.infer<
   typeof veterinerApplicationSchema
 >;
 
-export const petshopApplicationSchema = z.object({
-  magazaAdi: z.string().trim().min(2).max(120),
-  yetkili: z.string().trim().min(2).max(120),
-  telefon: z.string().trim().regex(phoneRegex, "Geçerli telefon girin"),
-  email: z.string().trim().email(),
-  vergiNo: z.string().trim().min(10).max(11),
-  iban: z.string().trim().regex(ibanRegex, "Geçerli TR IBAN girin"),
-  il: z.string().trim().min(2).max(40),
-  ilce: z.string().trim().min(2).max(40),
-  adres: z.string().trim().min(10).max(300),
-  kategori: z.string().trim().min(2).max(80),
-  calismaSaatleri: z.string().trim().min(3).max(200),
-  teslimatBolgeleri: z.string().trim().min(3).max(300),
-  logo: fileMetaSchema,
-  kapak: fileMetaSchema.optional(),
-  belgeler: z.array(fileMetaSchema).min(1, "En az bir belge yükleyin").max(8),
-  kvkkOnay: z.boolean().refine((v) => v === true, {
-    message: "KVKK onayı zorunludur",
-  }),
-  captchaToken: z.string().min(1).optional(),
-  website: z.string().max(0).optional(),
-});
+export const petshopApplicationSchema = z
+  .object({
+    magazaAdi: z.string().trim().min(2).max(120),
+    yetkili: z.string().trim().min(2).max(120),
+    telefon: z.string().trim().regex(phoneRegex, "Geçerli telefon girin"),
+    email: z.string().trim().email(),
+    vergiNo: z.string().trim().min(10).max(11),
+    iban: ibanSchema,
+    il: citySchema,
+    ilce: districtSchema,
+    adres: z.string().trim().min(10).max(300),
+    kategori: z.string().trim().min(2).max(80),
+    workingHours: workingHoursSchema,
+    teslimatIl: citySchema,
+    teslimatIlce: districtSchema,
+    teslimatMahalleleri: z
+      .array(z.string())
+      .min(1, "En az bir teslimat mahallesi seçin"),
+    logo: fileMetaSchema,
+    kapak: fileMetaSchema.optional(),
+    vergiLevhasi: fileMetaSchema,
+    belgeler: z.array(fileMetaSchema).max(8).optional(),
+    kvkkOnay: z.boolean().refine((v) => v === true, {
+      message: "KVKK onayı zorunludur",
+    }),
+    captchaToken: z.string().min(1).optional(),
+    website: z.string().max(0).optional(),
+  })
+  .refine((data) => isValidDistrict(data.il, data.ilce), {
+    message: "Seçilen ilçe bu ile ait değil",
+    path: ["ilce"],
+  })
+  .refine((data) => isValidDistrict(data.teslimatIl, data.teslimatIlce), {
+    message: "Seçilen ilçe bu ile ait değil",
+    path: ["teslimatIlce"],
+  });
 
 export type PetshopApplicationInput = z.infer<typeof petshopApplicationSchema>;
 

@@ -67,7 +67,24 @@ export async function POST(request: Request) {
 
   const logo = collectFiles(formData, "logo", 1)[0];
   const kapak = collectFiles(formData, "kapak", 1)[0];
+  const vergiLevhasi = collectFiles(formData, "vergiLevhasi", 1)[0];
   const belgeler = collectFiles(formData, "belgeler", MAX_DOCS);
+
+  let workingHours: unknown = {};
+  try {
+    workingHours = JSON.parse(String(formData.get("workingHours") ?? "{}"));
+  } catch {
+    workingHours = {};
+  }
+
+  let teslimatMahalleleri: unknown = [];
+  try {
+    teslimatMahalleleri = JSON.parse(
+      String(formData.get("teslimatMahalleleri") ?? "[]"),
+    );
+  } catch {
+    teslimatMahalleleri = [];
+  }
 
   const candidate = {
     magazaAdi: formData.get("magazaAdi"),
@@ -80,10 +97,13 @@ export async function POST(request: Request) {
     ilce: formData.get("ilce"),
     adres: formData.get("adres"),
     kategori: formData.get("kategori"),
-    calismaSaatleri: formData.get("calismaSaatleri"),
-    teslimatBolgeleri: formData.get("teslimatBolgeleri"),
+    workingHours,
+    teslimatIl: formData.get("teslimatIl"),
+    teslimatIlce: formData.get("teslimatIlce"),
+    teslimatMahalleleri,
     logo: logo ? fileMeta(logo) : undefined,
     kapak: kapak ? fileMeta(kapak) : undefined,
+    vergiLevhasi: vergiLevhasi ? fileMeta(vergiLevhasi) : undefined,
     belgeler: belgeler.length ? belgeler.map(fileMeta) : [],
     kvkkOnay: formData.get("kvkkOnay") === "true",
   };
@@ -103,7 +123,7 @@ export async function POST(request: Request) {
   // Defense in depth: re-validate the real files server-side (MIME + size)
   // even though the schema above already checked their reported metadata —
   // never trust the client alone.
-  for (const file of [logo!, ...(kapak ? [kapak] : []), ...belgeler]) {
+  for (const file of [logo!, vergiLevhasi!, ...(kapak ? [kapak] : []), ...belgeler]) {
     const err = validateUploadMeta(file);
     if (err) {
       return NextResponse.json(
@@ -167,6 +187,7 @@ export async function POST(request: Request) {
     const documents = {
       logo: await uploadOne(logo!, "logo"),
       kapak: kapak ? await uploadOne(kapak, "kapak") : null,
+      vergiLevhasi: await uploadOne(vergiLevhasi!, "vergi-levhasi"),
       belgeler: await Promise.all(
         belgeler.map((file, i) => uploadOne(file, `belge-${i}`)),
       ),
@@ -179,13 +200,20 @@ export async function POST(request: Request) {
       phone: sanitizeText(data.telefon),
       email: sanitizeText(data.email),
       tax_no: sanitizeText(data.vergiNo),
-      iban: sanitizeText(data.iban),
+      iban: data.iban,
       city: sanitizeText(data.il),
       district: sanitizeText(data.ilce),
       address: sanitizeText(data.adres),
       category: sanitizeText(data.kategori),
-      working_hours: sanitizeText(data.calismaSaatleri),
-      delivery_zones: sanitizeText(data.teslimatBolgeleri),
+      working_hours: data.workingHours,
+      delivery_zones: sanitizeText(
+        `${data.teslimatIlce}: ${data.teslimatMahalleleri.join(", ")}`,
+      ),
+      delivery_neighborhoods: {
+        il: sanitizeText(data.teslimatIl),
+        ilce: sanitizeText(data.teslimatIlce),
+        mahalleler: data.teslimatMahalleleri.map(sanitizeText),
+      },
       documents,
       status: "pending_review",
       ip,

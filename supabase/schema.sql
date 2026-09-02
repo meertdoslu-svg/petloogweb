@@ -25,10 +25,15 @@ create table if not exists public.veteriner_applications (
   address text not null,
   tax_no text not null,
   iban text not null,
-  working_hours text not null,
+  -- {pzt,sal,car,per,cum,cmt,paz}: {open,close,closed} — same shape as the
+  -- production merchants.working_hours JSONB column (main app).
+  working_hours jsonb not null default '{}'::jsonb,
   services text[] not null default '{}',
+  -- documents.ruhsat (Veteriner Ruhsatı) is optional — may be null.
   documents jsonb not null default '{}'::jsonb,
   status text not null default 'pending_review',
+  reviewed_at timestamptz,
+  rejection_reason text,
   ip text,
   created_at timestamptz not null default now()
 );
@@ -45,10 +50,21 @@ create table if not exists public.petshop_applications (
   district text not null,
   address text not null,
   category text not null,
-  working_hours text not null,
+  -- {pzt,sal,car,per,cum,cmt,paz}: {open,close,closed} — same shape as the
+  -- production merchants.working_hours JSONB column (main app).
+  working_hours jsonb not null default '{}'::jsonb,
+  -- Human-readable fallback (comma-joined mahalle names); the structured
+  -- selection lives in delivery_neighborhoods below. The real merchants
+  -- table only supports radius-based delivery, so there's no existing
+  -- neighborhood-list model to reuse for this column.
   delivery_zones text not null,
+  -- { il, ilce, mahalleler: string[] }
+  delivery_neighborhoods jsonb not null default '{}'::jsonb,
+  -- documents.vergiLevhasi (Vergi Levhası) alongside logo/kapak/belgeler.
   documents jsonb not null default '{}'::jsonb,
   status text not null default 'pending_review',
+  reviewed_at timestamptz,
+  rejection_reason text,
   ip text,
   created_at timestamptz not null default now()
 );

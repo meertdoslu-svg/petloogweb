@@ -78,6 +78,13 @@ export async function POST(request: Request) {
     hizmetTurleri = [];
   }
 
+  let workingHours: unknown = {};
+  try {
+    workingHours = JSON.parse(String(formData.get("workingHours") ?? "{}"));
+  } catch {
+    workingHours = {};
+  }
+
   const candidate = {
     klinikAdi: formData.get("klinikAdi"),
     yetkiliVeteriner: formData.get("yetkiliVeteriner"),
@@ -90,7 +97,7 @@ export async function POST(request: Request) {
     adres: formData.get("adres"),
     vergiNo: formData.get("vergiNo"),
     iban: formData.get("iban"),
-    calismaSaatleri: formData.get("calismaSaatleri"),
+    workingHours,
     hizmetTurleri,
     vergiLevhasi: vergiLevhasi ? fileMeta(vergiLevhasi) : undefined,
     imzaSirkusu: imzaSirkusu ? fileMeta(imzaSirkusu) : undefined,
@@ -116,10 +123,15 @@ export async function POST(request: Request) {
   // Defense in depth: re-validate the real files server-side (MIME + size)
   // even though the schema above already checked their reported metadata —
   // never trust the client alone.
-  const requiredFiles = [vergiLevhasi, imzaSirkusu, ruhsat].filter(
+  const requiredFiles = [vergiLevhasi, imzaSirkusu].filter(
     (f): f is File => Boolean(f),
   );
-  for (const file of [...requiredFiles, ...(logo ? [logo] : []), ...fotograflar]) {
+  for (const file of [
+    ...requiredFiles,
+    ...(ruhsat ? [ruhsat] : []),
+    ...(logo ? [logo] : []),
+    ...fotograflar,
+  ]) {
     const err = validateUploadMeta(file);
     if (err) {
       return NextResponse.json(
@@ -183,7 +195,7 @@ export async function POST(request: Request) {
     const documents = {
       vergiLevhasi: await uploadOne(vergiLevhasi!, "vergi-levhasi"),
       imzaSirkusu: await uploadOne(imzaSirkusu!, "imza-sirkusu"),
-      ruhsat: await uploadOne(ruhsat!, "ruhsat"),
+      ruhsat: ruhsat ? await uploadOne(ruhsat, "ruhsat") : null,
       logo: logo ? await uploadOne(logo, "logo") : null,
       fotograflar: await Promise.all(
         fotograflar.map((file, i) => uploadOne(file, `fotograf-${i}`)),
@@ -202,8 +214,8 @@ export async function POST(request: Request) {
       district: sanitizeText(data.ilce),
       address: sanitizeText(data.adres),
       tax_no: sanitizeText(data.vergiNo),
-      iban: sanitizeText(data.iban),
-      working_hours: sanitizeText(data.calismaSaatleri),
+      iban: data.iban,
+      working_hours: data.workingHours,
       services: data.hizmetTurleri.map(sanitizeText),
       documents,
       status: "pending_review",
