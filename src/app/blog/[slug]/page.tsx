@@ -2,36 +2,49 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/components/seo/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { BLOG_POSTS, getPost, getRelatedPosts } from "@/lib/blog";
+import {
+  getPublishedPost,
+  getPublishedPosts,
+  getRelatedPublishedPosts,
+} from "@/lib/blogPosts";
 import { SITE } from "@/lib/constants";
 import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 import { absoluteUrl } from "@/lib/utils";
 
 type Props = { params: Promise<{ slug: string }> };
 
+// Posts are authored from PetLoog Admin, so this page can't be fully
+// static — revalidate periodically rather than on every request. A slug
+// not covered by generateStaticParams below still renders on demand
+// (Next's default dynamicParams=true), so a newly published post is
+// reachable immediately without a redeploy.
+export const revalidate = 300;
+
 export async function generateStaticParams() {
-  return BLOG_POSTS.map((p) => ({ slug: p.slug }));
+  const posts = await getPublishedPosts();
+  return posts.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = await getPublishedPost(slug);
   if (!post) return {};
   return buildMetadata({
     title: post.title,
     description: post.excerpt,
     path: `/blog/${post.slug}`,
-    // post.coverImage is an in-page SVG illustration, not a social-share
-    // asset (most platforms don't render SVG og:image previews) — fall
-    // back to the default raster OG image for link previews.
+    // Only admin-uploaded raster covers make good og:image previews (most
+    // platforms don't render SVG); the local SVG illustrations fall back
+    // to the default OG image.
+    image: post.coverImage.endsWith(".svg") ? undefined : post.coverImage || undefined,
   });
 }
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = getPost(slug);
+  const post = await getPublishedPost(slug);
   if (!post) notFound();
-  const related = getRelatedPosts(slug);
+  const related = await getRelatedPublishedPosts(post);
 
   const articleLd = {
     "@context": "https://schema.org",

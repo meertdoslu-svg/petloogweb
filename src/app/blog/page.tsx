@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { Breadcrumb } from "@/components/seo/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { BLOG_POSTS } from "@/lib/blog";
+import { getPublishedPosts } from "@/lib/blogPosts";
 import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
 type Props = { searchParams: Promise<{ q?: string; kategori?: string }> };
+
+// Posts are authored from PetLoog Admin, so this page can't be fully
+// static — revalidate periodically rather than on every request.
+export const revalidate = 300;
 
 export const metadata = buildMetadata({
   title: "Blog",
@@ -17,7 +21,9 @@ export default async function BlogPage({ searchParams }: Props) {
   const { q = "", kategori = "" } = await searchParams;
   const query = q.trim().toLowerCase();
 
-  const posts = BLOG_POSTS.filter((post) => {
+  const allPosts = await getPublishedPosts();
+
+  const posts = allPosts.filter((post) => {
     const matchesQuery =
       !query ||
       post.title.toLowerCase().includes(query) ||
@@ -28,7 +34,7 @@ export default async function BlogPage({ searchParams }: Props) {
     return matchesQuery && matchesCategory;
   });
 
-  const categories = Array.from(new Set(BLOG_POSTS.map((p) => p.category)));
+  const categories = Array.from(new Set(allPosts.map((p) => p.category)));
 
   return (
     <div className="container-site py-10 md:py-14">
@@ -89,7 +95,16 @@ export default async function BlogPage({ searchParams }: Props) {
             key={post.slug}
             className="overflow-hidden rounded-[24px] bg-surface shadow-[var(--shadow-soft)]"
           >
-            <div className="aspect-[16/10] bg-gradient-to-br from-[#efe6d8] to-[#d9e4c8]" />
+            {post.coverImage ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={post.coverImage}
+                alt={post.title}
+                className="aspect-[16/10] w-full object-cover"
+              />
+            ) : (
+              <div className="aspect-[16/10] bg-gradient-to-br from-[#efe6d8] to-[#d9e4c8]" />
+            )}
             <div className="p-5">
               <p className="text-xs font-bold uppercase tracking-wide text-accent">
                 {post.category}

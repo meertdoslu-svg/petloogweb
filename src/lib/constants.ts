@@ -9,19 +9,27 @@ export const SITE = {
   tagline: "PATİ EKOSİSTEMİ",
   slogan: "Evcil dostunuz için tek platform.",
   url: SITE_URL,
-  email: "info@petloog.com",
-  phone: "+90 850 000 00 00",
-  whatsapp: "908500000000",
-  address: "İstanbul, Türkiye",
-  social: {
-    instagram: "https://instagram.com/petloog",
-    facebook: "https://facebook.com/petloog",
-    x: "https://x.com/petloog",
-    youtube: "https://youtube.com/@petloog",
-  },
+  // Verified legal & support contact address (also used across the legal
+  // documents). No verified corporate phone, WhatsApp line or physical office
+  // address exists in this repo — until one is provided, production UI shows
+  // no phone/address rather than a placeholder.
+  email: "legal@petloog.com",
   appStore: "https://apps.apple.com/app/petloog",
   googlePlay: "https://play.google.com/store/apps/details?id=com.petloog",
 } as const;
+
+// Verified public PetLoog social accounts. X handle is NOT yet confirmed
+// and PetLoog has no Facebook or YouTube account, so those stay unset and
+// no icon renders for them. Add a verified full profile URL here to surface
+// that icon in the footer.
+export const SOCIAL_LINKS: {
+  instagram?: string;
+  x?: string;
+  facebook?: string;
+  youtube?: string;
+} = {
+  instagram: "https://www.instagram.com/petloogapp/",
+};
 
 // The configured appStore URL is missing the numeric "/idNNNNNNNNNN" segment
 // every real App Store listing has, and support docs describe the app as

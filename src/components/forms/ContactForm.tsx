@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/Button";
+import { parseApiResponse } from "@/lib/http";
 import {
   contactSchema,
   type ContactInput,
@@ -41,10 +42,10 @@ export function ContactForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
-      const data = (await res.json()) as { message?: string };
-      if (!res.ok) throw new Error(data.message || "Gönderim başarısız");
+      const result = await parseApiResponse<{ message?: string }>(res);
+      if (!result.ok) throw new Error(result.message);
       setStatus("success");
-      setMessage(data.message || "Mesajınız alındı.");
+      setMessage(result.data?.message || result.message || "Mesajınız alındı.");
       reset();
     } catch (err) {
       setStatus("error");

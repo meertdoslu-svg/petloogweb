@@ -13,7 +13,7 @@ export const metadata = buildMetadata({
 const FAQS = [
   {
     q: "Destek saatleri nedir?",
-    a: "Kapalı beta sürecinde hafta içi 1–2 iş günü içinde yanıt veriyoruz. WhatsApp hattımız mesai dışında da mesaj alabilir.",
+    a: "Kapalı beta sürecinde hafta içi 1–2 iş günü içinde yanıt veriyoruz.",
   },
   {
     q: "Uygulama abonelik iptalini nasıl yaparım?",
@@ -42,7 +42,8 @@ const QUICK_LINKS = [
   { href: "/privacy", label: "Gizlilik Politikası", description: "Kişisel verilerinizin nasıl işlendiğini öğrenin." },
   { href: "/terms", label: "Kullanım Koşulları", description: "Platform kullanımına ilişkin hukuki çerçeve." },
   { href: "/kvkk", label: "KVKK Aydınlatma Metni", description: "6698 sayılı Kanun kapsamında aydınlatma metni." },
-  { href: "/iletisim", label: "İletişim", description: "Telefon, WhatsApp, e-posta ve iletişim formu." },
+  { href: "/destek", label: "Destek", description: "Konu başlıklarına göre yardım ve iletişim bilgileri." },
+  { href: "/iletisim", label: "İletişim", description: "E-posta ve iletişim formu." },
   { href: "/yasal/hesap-silme", label: "Hesap Silme", description: "Hesabınızın ve verilerinizin silinmesini nasıl talep edeceğinizi öğrenin." },
 ];
 
@@ -101,8 +102,8 @@ export default function HelpPage() {
           Aradığınızı bulamadınız mı?
         </h2>
         <p className="mx-auto mt-2 max-w-xl text-sm text-primary/70">
-          Bize {SITE.phone} numaralı telefondan, WhatsApp&apos;tan veya{" "}
-          {SITE.email} adresinden ulaşabilirsiniz.
+          Bize {SITE.email} adresinden veya iletişim formundan
+          ulaşabilirsiniz.
         </p>
         <Link
           href="/iletisim"

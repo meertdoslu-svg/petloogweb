@@ -1,5 +1,10 @@
 import type { BlogPost } from "@/types";
 
+// Fallback/seed data only. The live Blog pages read from Supabase
+// (public.blog_posts, managed from PetLoog Admin) via src/lib/blogPosts.ts
+// — this array is the seed source for that table (see
+// supabase/migrations/20260902180002_blog_posts.sql) and the fallback used
+// when Supabase isn't configured (local dev, or a transient outage).
 export const BLOG_POSTS: BlogPost[] = [
   {
     slug: "petloog-ekosistemi-nedir",

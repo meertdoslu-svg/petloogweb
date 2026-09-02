@@ -32,21 +32,18 @@ export default function SupportPage() {
             Diğer İletişim Kanalları
           </h2>
           <p className="mt-2 text-sm text-primary/70">
-            Telefon, WhatsApp, e-posta ve iletişim formu için PetLoog İletişim
-            sayfasını kullanabilirsiniz.
+            E-posta ve iletişim formu ile bize ulaşabilirsiniz.
           </p>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <ContactItem label="Telefon" value={SITE.phone} href={`tel:${SITE.phone.replace(/\s/g, "")}`} />
-            <ContactItem
-              label="WhatsApp"
-              value="WhatsApp'tan yazın"
-              href={`https://wa.me/${SITE.whatsapp}`}
-              external
-            />
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <ContactItem label="E-posta" value={SITE.email} href={`mailto:${SITE.email}`} />
-            <ContactItem label="Adres" value={SITE.address} />
           </div>
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+            <Link
+              href="/destek"
+              className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline"
+            >
+              Destek sayfası →
+            </Link>
             <Link
               href="/iletisim"
               className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline"

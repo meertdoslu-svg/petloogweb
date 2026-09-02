@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { absoluteUrl } from "@/lib/utils";
-import { SITE } from "@/lib/constants";
+import { SITE, SOCIAL_LINKS } from "@/lib/constants";
 
 type BuildMetaInput = {
   title: string;
@@ -59,8 +59,7 @@ export function organizationJsonLd() {
     url: SITE.url,
     logo: absoluteUrl("/brand/logo.png"),
     email: SITE.email,
-    telephone: SITE.phone,
-    sameAs: Object.values(SITE.social),
+    sameAs: Object.values(SOCIAL_LINKS).filter(Boolean),
     description: SITE.slogan,
   };
 }
