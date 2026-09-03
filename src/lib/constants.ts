@@ -9,11 +9,17 @@ export const SITE = {
   tagline: "PATİ EKOSİSTEMİ",
   slogan: "Evcil dostunuz için tek platform.",
   url: SITE_URL,
-  // Verified legal & support contact address (also used across the legal
-  // documents). No verified corporate phone, WhatsApp line or physical office
-  // address exists in this repo — until one is provided, production UI shows
-  // no phone/address rather than a placeholder.
-  email: "legal@petloog.com",
+  // General public contact address — footer, /iletisim, /support, /help,
+  // /destek, and the Organization JSON-LD all read this one value.
+  // Genuinely legal-notice contexts (dispute resolution, KVKK/privacy
+  // rights requests, security incident reports) intentionally keep using
+  // legal@petloog.com instead — see src/content/legal/*.md and the
+  // "Gizlilik / KVKK" line in SUPPORT.md, which are hardcoded separately
+  // from this constant on purpose. No verified corporate phone, WhatsApp
+  // line or physical office address exists in this repo — until one is
+  // provided, production UI shows no phone/address rather than a
+  // placeholder.
+  email: "info@petloog.com",
   appStore: "https://apps.apple.com/app/petloog",
   googlePlay: "https://play.google.com/store/apps/details?id=com.petloog",
 } as const;

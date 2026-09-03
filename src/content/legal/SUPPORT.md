@@ -1,6 +1,6 @@
 # PetLoog — Destek
 
-**E-posta:** legal@petloog.com  
+**E-posta:** info@petloog.com  
 **Gizlilik / KVKK:** legal@petloog.com  
 **Web:** https://petloog.com  
 **Destek:** https://petloog.com/destek  
