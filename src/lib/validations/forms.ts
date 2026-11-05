@@ -81,7 +81,9 @@ export const preRegistrationSchema = z
       tur: z.literal("veteriner"),
       ...baseFields,
       acilNobet: z.enum(EMERGENCY_OPTIONS, { error: "Acil/nöbet durumunu seç" }),
-      listelenmeIzni: z.boolean().default(false),
+      listelenmeIzni: z.literal(true, {
+        error: "Ön kayıt için kliniğinin listelenmesine izin vermen gerekiyor",
+      }),
     }),
   ])
   .superRefine((data, ctx) => {

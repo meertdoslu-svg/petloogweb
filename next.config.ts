@@ -18,6 +18,7 @@ const LEGACY_REDIRECTS: { source: string; destination: string }[] = [
   { source: "/yasal/pet-taksi", destination: "/yasal" },
   { source: "/yasal/topluluk-kurallari", destination: "/yasal" },
   { source: "/yasal/yuva-kurallari", destination: "/yasal" },
+  { source: "/yasal/kasko", destination: "/yasal" }, // PetGüvence: never sold
   // Old-concept blog posts (moved to draft)
   { source: "/blog/petloog-ekosistemi-nedir", destination: "/blog" },
   { source: "/blog/dijital-veteriner-hasta-takibi", destination: "/blog" },

@@ -33,13 +33,6 @@ export function rateLimit(
   return { ok: true, remaining: limit - current.count };
 }
 
-export function sanitizeText(input: string) {
-  return input
-    .replace(/[<>]/g, "")
-    .replace(/javascript:/gi, "")
-    .trim();
-}
-
 // Vercel captures stdout/stderr as Function Logs — this is a private,
 // server-only surface (never returned to the client), so it's always safe
 // and necessary to log here, including in production. Previously this only
@@ -62,7 +55,7 @@ export function auditLog(event: string, meta: Record<string, unknown> = {}) {
 }
 
 /**
- * Production must fail closed: if a required server dependency (Supabase)
+ * Production must fail closed: if a required server dependency (e-mail provider)
  * isn't configured, the API must return an error rather than pretend a
  * submission was saved. Non-production environments may stay
  * developer-friendly (see call sites) since there's no real data to lose.

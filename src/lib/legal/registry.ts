@@ -10,7 +10,6 @@ export type LegalSlug =
   | "satici-sozlesmesi"
   | "veteriner-sozlesmesi"
   | "market-kurallari"
-  | "kasko"
   | "sahne-kurallari"
   | "hesap-silme"
   | "destek";
@@ -21,8 +20,6 @@ export type LegalDocument = {
   description: string;
   filename?: string;
   content: string;
-  /** Kept reachable at its URL but not listed, not in sitemap, noindex. */
-  unlisted?: boolean;
 };
 
 export type LegalDocumentMeta = Omit<LegalDocument, "content">;
@@ -185,20 +182,6 @@ const LEGAL_ENTRIES: LegalEntry[] = [
     inlineContent: MARKET_CONTENT,
   },
   {
-    // Slug kept as "kasko" for URL/backward compatibility; the document is
-    // now PetGüvence (Veteriner Sağlık Planı) — a veterinary membership, not
-    // an insurance product.
-    slug: "kasko",
-    title: "PetGüvence Kullanım Şartları",
-    description: "PetGüvence (veteriner sağlık/hizmet üyeliği) kullanım şartları.",
-    filename: "PETGUVENCE_TERMS_V1_1.md",
-    stripMarkdownHeadings: true,
-    // PetGüvence is not part of v1. Unlisted + noindex instead of removed,
-    // because users of the old Android build may still hold a plan — the
-    // decision about that build is pending. Remove once it is retired.
-    unlisted: true,
-  },
-  {
     slug: "sahne-kurallari",
     title: "Sahne kuralları",
     description: "PetLoog Sahne özelliğine katılım kuralları.",
@@ -234,10 +217,8 @@ export function getLegalDocument(slug: string): LegalDocument | undefined {
   };
 }
 
-export function listLegalDocuments(
-  { includeUnlisted = false }: { includeUnlisted?: boolean } = {},
-): LegalDocumentMeta[] {
-  return LEGAL_ENTRIES.filter((e) => includeUnlisted || !e.unlisted).map(
+export function listLegalDocuments(): LegalDocumentMeta[] {
+  return LEGAL_ENTRIES.map(
     ({ filename, inlineContent, stripMarkdownHeadings, ...meta }) => {
       void filename;
       void inlineContent;

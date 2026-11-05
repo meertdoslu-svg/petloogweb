@@ -38,7 +38,7 @@ function rows(data: PreRegistration): [string, string][] {
         ]
       : [
           ["Acil / nöbet", data.acilNobet],
-          ["Uygulamada listelenme izni", data.listelenmeIzni ? "Evet" : "Hayır"],
+          ["Uygulamada listelenme izni", "Verildi"],
         ];
   return [
     ...common,

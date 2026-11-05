@@ -348,9 +348,12 @@ export function PreRegistrationForm({ initialTur }: { initialTur: Tur }) {
               id="listelenmeIzni"
               checked={values.listelenmeIzni}
               onChange={(v) => set("listelenmeIzni", v)}
+              error={errors.listelenmeIzni}
+              required
             >
               Kliniğimin adı, adresi, telefonu ve çalışma saatlerinin PetLoog
-              uygulamasında listelenmesine izin veriyorum.
+              uygulamasında listelenmesine izin veriyorum.{" "}
+              <span className="text-danger">(zorunlu)</span>
             </Checkbox>
           </>
         )}

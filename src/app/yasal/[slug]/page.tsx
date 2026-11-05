@@ -17,7 +17,7 @@ const LEGAL_CANONICAL_OVERRIDES: Record<string, string | undefined> = {
 };
 
 export async function generateStaticParams() {
-  return listLegalDocuments({ includeUnlisted: true }).map((doc) => ({ slug: doc.slug }));
+  return listLegalDocuments().map((doc) => ({ slug: doc.slug }));
 }
 
 export async function generateMetadata({ params }: Props) {
@@ -29,7 +29,6 @@ export async function generateMetadata({ params }: Props) {
     description: document.description,
     path: `/yasal/${slug}`,
     canonicalPath: LEGAL_CANONICAL_OVERRIDES[slug],
-    noIndex: Boolean(document.unlisted),
   });
 }
 
