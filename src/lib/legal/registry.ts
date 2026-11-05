@@ -7,14 +7,11 @@ export type LegalSlug =
   | "cerez"
   | "kullanim-kosullari"
   | "acik-riza"
-  | "ai-politikasi"
   | "satici-sozlesmesi"
   | "veteriner-sozlesmesi"
   | "market-kurallari"
-  | "pet-taksi"
   | "kasko"
-  | "topluluk-kurallari"
-  | "yuva-kurallari"
+  | "sahne-kurallari"
   | "hesap-silme"
   | "destek";
 
@@ -24,6 +21,8 @@ export type LegalDocument = {
   description: string;
   filename?: string;
   content: string;
+  /** Kept reachable at its URL but not listed, not in sitemap, noindex. */
+  unlisted?: boolean;
 };
 
 export type LegalDocumentMeta = Omit<LegalDocument, "content">;
@@ -75,86 +74,6 @@ const MARKET_CONTENT = buildFromSections(
   ],
 );
 
-const TAXI_CONTENT = buildFromSections(
-  "PETLOOG PET TAKSİ HİZMET ŞARTLARI",
-  "1.0",
-  "Pet Taksi eşleştirme, taşıma talebi ve güvenlik kurallarını düzenler.",
-  [
-    {
-      title: "Eşleştirme",
-      body: "Platform talep ile sürücüyü buluşturur. Taşıma sözleşmesi kullanıcı ile sürücü arasındadır.",
-    },
-    {
-      title: "Hayvan Güvenliği",
-      body: "Uygun taşıma ekipmanı, tasma/kafes ve sakinleştirici ilaç kullanımı veteriner önerisine bağlıdır. Agresif veya hastalıklı hayvanlar için önceden bilgilendirme zorunludur.",
-    },
-    {
-      title: "İptal ve Ücret",
-      body: "İptal politikaları uygulama içinde gösterilir. Haksız iptal veya no-show durumunda kısıtlama uygulanabilir.",
-    },
-    {
-      title: "Konum",
-      body: "Konum paylaşımı taşıma güvenliği içindir. İzin verilmezse bazı özellikler çalışmayabilir.",
-    },
-  ],
-);
-
-const COMMUNITY_CONTENT = buildFromSections(
-  "PETLOOG TOPLULUK KURALLARI",
-  "1.0",
-  "Mahalle, Yuva ve diğer topluluk alanlarında güvenli ve saygılı etkileşim için kurallar.",
-  [
-    {
-      title: "Saygı ve Güvenlik",
-      body: "Hakaret, nefret, tehdit, spam ve yanıltıcı içerik yasaktır. Hayvan refahı önceliklidir.",
-    },
-    {
-      title: "İçerik",
-      body: "Gerçekçi fotoğraf ve doğru konum bilgisi kullanın. Başkasının içeriğini izinsiz paylaşmayın.",
-    },
-    {
-      title: "Moderasyon",
-      body: "PetLoog uygunsuz içerikleri kaldırabilir, hesapları kısıtlayabilir veya yasal mercilere bildirebilir.",
-    },
-    {
-      title: "Gizlilik",
-      body: "Kişisel iletişim bilgilerini herkese açık paylaşmayın. Çocuk ve hassas konumlarda dikkatli olun.",
-    },
-  ],
-);
-
-const YUVA_CONTENT = buildFromSections(
-  "PETLOOG YUVA KURALLARI",
-  "1.0",
-  "Yuva; sahiplendirme ilanları, başvurular ve klinik kaynaklı aktarımlar için PetLoog üzerindeki buluşma alanıdır. Bu kurallar hayvan refahını, doğru bilgilendirmeyi ve güvenli eşleştirmeyi esas alır.",
-  [
-    {
-      title: "Amaç",
-      body: "Yuva, sahipsiz veya yeni yuva arayan hayvanlar ile uygun adayları bir araya getirmek için tasarlanmıştır. PetLoog aracılık platformudur; sahiplik devri taraflar arasında gerçekleşir.",
-    },
-    {
-      title: "İlan Kuralları",
-      body: "- İlan sahibi doğru tür, yaş, sağlık ve mizaç bilgisi vermelidir.\n- Yanıltıcı fotoğraf, sahte konum veya ücretli “satış” kılığında sahiplendirme yasaktır.\n- Yasal olarak ticarete konu edilen hayvan satışları Yuva kapsamında değildir.",
-    },
-    {
-      title: "Başvuru ve Değerlendirme",
-      body: "- Başvuran kişi kimlik ve iletişim bilgilerini doğru beyan eder.\n- Yaşam alanı, deneyim ve bakım taahhüdü soruları gerçeğe uygun yanıtlanmalıdır.\n- İlan sahibi başvuruları reddedebilir; ayrımcı veya nefret içeren ret gerekçeleri yasaktır.",
-    },
-    {
-      title: "Hayvan Refahı",
-      body: "Hayvanın güvenliği, stresinin azaltılması ve uygun taşıma önceliklidir. Agresyon, bulaşıcı hastalık veya özel bakım ihtiyacı önceden açıklanmalıdır. İhmal veya kötü muamele şüphesinde PetLoog ilanı kaldırabilir ve hesabı kısıtlayabilir.",
-    },
-    {
-      title: "Klinik Aktarımlar",
-      body: "Veteriner kaynaklı Yuva aktarımlarında klinik kayıtların doğruluğu klinik sorumluluğundadır. Kullanıcı, aktarım sonrası bakım yükümlülüğünü kabul eder.",
-    },
-    {
-      title: "Uyuşmazlık",
-      body: "Sahiplendirme sonrası anlaşmazlıklarda PetLoog arabuluculuk yapmak zorunda değildir. Yasal merciler ve ilgili mevzuat saklıdır. Platform kurallarına aykırı davranışlarda hesap kısıtı uygulanabilir.",
-    },
-  ],
-);
-
 const ACCOUNT_DELETION_CONTENT = buildFromSections(
   "PETLOOG HESAP SİLME POLİTİKASI",
   "1.0",
@@ -176,6 +95,23 @@ const ACCOUNT_DELETION_CONTENT = buildFromSections(
       title: "İş Ortaklığı Hesapları",
       body: "Veteriner ve satıcı hesaplarında aktif sözleşme veya bekleyen işlem varsa silme, süreç tamamlandıktan sonra gerçekleştirilir.",
     },
+  ],
+);
+
+// Skeleton only — the legal text will be supplied by counsel. Section
+// headings are placeholders for structure; do not treat as legal content.
+const SAHNE_RULES_SKELETON = buildFromSections(
+  "PETLOOG SAHNE KURALLARI",
+  "taslak",
+  "Bu sayfanın metni hazırlanıyor.",
+  [
+    { title: "Kapsam", body: "[Metin hazırlanıyor]" },
+    { title: "Katılım", body: "[Metin hazırlanıyor]" },
+    { title: "Fotoğraf ve içerik kuralları", body: "[Metin hazırlanıyor]" },
+    { title: "Oylama ve Sahnenin yıldızı", body: "[Metin hazırlanıyor]" },
+    { title: "Paylaşım ve hikâye kartı", body: "[Metin hazırlanıyor]" },
+    { title: "İçeriğin kaldırılması", body: "[Metin hazırlanıyor]" },
+    { title: "İletişim", body: "[Metin hazırlanıyor]" },
   ],
 );
 
@@ -225,12 +161,6 @@ const LEGAL_ENTRIES: LegalEntry[] = [
     filename: "CONSENT.md",
   },
   {
-    slug: "ai-politikasi",
-    title: "AI Kullanım ve Sorumluluk Politikası",
-    description: "PetLoog AI kullanım politikası.",
-    filename: "AI_POLICY.md",
-  },
-  {
     slug: "satici-sozlesmesi",
     title: "Satıcı Hizmet Sözleşmesi",
     description: "PetShop / satıcı hizmet sözleşmesi.",
@@ -255,12 +185,6 @@ const LEGAL_ENTRIES: LegalEntry[] = [
     inlineContent: MARKET_CONTENT,
   },
   {
-    slug: "pet-taksi",
-    title: "Pet Taksi Hizmet Şartları",
-    description: "Pet Taksi hizmet şartları.",
-    inlineContent: TAXI_CONTENT,
-  },
-  {
     // Slug kept as "kasko" for URL/backward compatibility; the document is
     // now PetGüvence (Veteriner Sağlık Planı) — a veterinary membership, not
     // an insurance product.
@@ -269,18 +193,16 @@ const LEGAL_ENTRIES: LegalEntry[] = [
     description: "PetGüvence (veteriner sağlık/hizmet üyeliği) kullanım şartları.",
     filename: "PETGUVENCE_TERMS_V1_1.md",
     stripMarkdownHeadings: true,
+    // PetGüvence is not part of v1. Unlisted + noindex instead of removed,
+    // because users of the old Android build may still hold a plan — the
+    // decision about that build is pending. Remove once it is retired.
+    unlisted: true,
   },
   {
-    slug: "topluluk-kurallari",
-    title: "Topluluk Kuralları",
-    description: "Mahalle Dostu topluluk kuralları.",
-    inlineContent: COMMUNITY_CONTENT,
-  },
-  {
-    slug: "yuva-kurallari",
-    title: "Yuva Kuralları",
-    description: "Yuva sahiplendirme kuralları.",
-    inlineContent: YUVA_CONTENT,
+    slug: "sahne-kurallari",
+    title: "Sahne kuralları",
+    description: "PetLoog Sahne özelliğine katılım kuralları.",
+    inlineContent: SAHNE_RULES_SKELETON,
   },
   {
     slug: "hesap-silme",
@@ -312,8 +234,10 @@ export function getLegalDocument(slug: string): LegalDocument | undefined {
   };
 }
 
-export function listLegalDocuments(): LegalDocumentMeta[] {
-  return LEGAL_ENTRIES.map(
+export function listLegalDocuments(
+  { includeUnlisted = false }: { includeUnlisted?: boolean } = {},
+): LegalDocumentMeta[] {
+  return LEGAL_ENTRIES.filter((e) => includeUnlisted || !e.unlisted).map(
     ({ filename, inlineContent, stripMarkdownHeadings, ...meta }) => {
       void filename;
       void inlineContent;

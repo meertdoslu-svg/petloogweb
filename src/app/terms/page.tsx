@@ -18,7 +18,7 @@ export default function TermsPage() {
     <>
       <JsonLd
         data={breadcrumbJsonLd([
-          { name: "Anasayfa", path: "/" },
+          { name: "Ana sayfa", path: "/" },
           { name: "Kullanım Koşulları", path: "/terms" },
         ])}
       />

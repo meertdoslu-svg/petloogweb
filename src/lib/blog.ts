@@ -5,6 +5,17 @@ import type { BlogPost } from "@/types";
 // — this array is the seed source for that table (see
 // supabase/migrations/20260902180002_blog_posts.sql) and the fallback used
 // when Supabase isn't configured (local dev, or a transient outage).
+// v1 refresh (2026-11): all three seed posts describe the old concept
+// (ekosistem/AI/kasko, veteriner hasta takibi/epikriz/muhasebe, market stok
+// paneli) and were moved to draft — kept, not deleted. Their URLs 301 to
+// /blog (see next.config.ts). The same rows also live in Supabase
+// public.blog_posts; set them to "draft" from PetLoog Admin as well.
+export const LEGACY_BLOG_SLUGS = [
+  "petloog-ekosistemi-nedir",
+  "dijital-veteriner-hasta-takibi",
+  "pet-market-stok-yonetimi",
+] as const;
+
 export const BLOG_POSTS: BlogPost[] = [
   {
     slug: "petloog-ekosistemi-nedir",
@@ -30,6 +41,7 @@ PetLoog, pet yaşamını daha güvenli, daha şeffaf ve daha kolay hale getirir.
     publishedAt: "2026-03-12",
     coverImage: "/images/blog/ecosystem.svg",
     readingMinutes: 5,
+    status: "draft",
   },
   {
     slug: "dijital-veteriner-hasta-takibi",
@@ -55,6 +67,7 @@ Sahipler mobil uygulamadan randevu ve raporlara erişebilir.
     publishedAt: "2026-04-02",
     coverImage: "/images/blog/vet.svg",
     readingMinutes: 6,
+    status: "draft",
   },
   {
     slug: "pet-market-stok-yonetimi",
@@ -80,20 +93,10 @@ Sipariş, stok ve gelir tek panelde birleşir.
     publishedAt: "2026-05-18",
     coverImage: "/images/blog/market.svg",
     readingMinutes: 4,
+    status: "draft",
   },
 ];
 
-export function getPost(slug: string) {
-  return BLOG_POSTS.find((p) => p.slug === slug);
-}
-
-export function getRelatedPosts(slug: string, limit = 2) {
-  const current = getPost(slug);
-  if (!current) return BLOG_POSTS.slice(0, limit);
-  return BLOG_POSTS.filter(
-    (p) =>
-      p.slug !== slug &&
-      (p.category === current.category ||
-        p.tags.some((t) => current.tags.includes(t))),
-  ).slice(0, limit);
-}
+export const PUBLISHED_FALLBACK_POSTS = BLOG_POSTS.filter(
+  (p) => p.status !== "draft",
+);

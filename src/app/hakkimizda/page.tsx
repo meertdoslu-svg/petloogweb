@@ -1,30 +1,31 @@
-import { Breadcrumb } from "@/components/seo/Breadcrumb";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { ButtonLink } from "@/components/ui/Button";
+import { type IconName } from "@/components/ui/Icon";
+import { Card, IconBadge, PageHeader } from "@/components/ui/Section";
 import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
   title: "Hakkımızda",
   description:
-    "PetLoog hikayesi, vizyon, misyon, değerler ve iş ortakları.",
+    "PetLoog, pati sahiplerini mahallelerindeki petshop, veteriner ve pati dostu mekanlarla buluşturan uygulama.",
   path: "/hakkimizda",
 });
 
-const VALUES = [
+const VALUES: { icon: IconName; title: string; text: string }[] = [
   {
-    title: "Güven",
-    text: "Pet sahipleri ve işletmeler için şeffaf, güvenli süreçler.",
+    icon: "store",
+    title: "Mahalle önce",
+    text: "Alışverişin mahallendeki petshop'tan olsun. Yakındaki esnaf kazansın, sen de beklemeden al.",
   },
   {
-    title: "Merhamet",
-    text: "Her kararın merkezinde evcil dostların refahı vardır.",
+    icon: "clock",
+    title: "Lazım olduğunda yanında",
+    text: "Gece de olsa, bayram da olsa şu an açık veterineri bulabilmen için buradayız.",
   },
   {
-    title: "Yenilik",
-    text: "AI ve dijital araçlarla pet yaşamını geleceğe taşıyoruz.",
-  },
-  {
-    title: "Topluluk",
-    text: "Mahalle Dostu ile lokal yardımlaşmayı güçlendiriyoruz.",
+    icon: "heart",
+    title: "Patiler bir arada",
+    text: "Sahne'de her gün yeni bir konu var. Patini göster, başkalarınınkine oy ver, birlikte eğlenelim.",
   },
 ];
 
@@ -33,78 +34,48 @@ export default function HakkimizdaPage() {
     <div className="container-site py-10 md:py-14">
       <JsonLd
         data={breadcrumbJsonLd([
-          { name: "Anasayfa", path: "/" },
+          { name: "Ana sayfa", path: "/" },
           { name: "Hakkımızda", path: "/hakkimizda" },
         ])}
       />
-      <Breadcrumb
-        items={[{ label: "Anasayfa", href: "/" }, { label: "Hakkımızda" }]}
+      <PageHeader
+        eyebrow="Hakkımızda"
+        title="Patinin ihtiyacı mahallende, PetLoog cebinde."
+        lead="PetLoog'u, bir pati sahibinin gün içinde en çok aradığı şeyleri tek yerde toplamak için yapıyoruz: mahalledeki petshop, şu an açık veteriner, mama hatırlatması ve patinle gidebileceğin mekanlar."
       />
 
-      <h1 className="text-3xl font-extrabold text-primary md:text-5xl">
-        Hakkımızda
-      </h1>
-
-      <section className="mt-10 max-w-3xl">
-        <h2 className="text-2xl font-extrabold text-primary">PetLoog Hikayesi</h2>
-        <p className="mt-3 text-base leading-relaxed text-primary/70">
-          PetLoog, evcil hayvan sahiplerinin ve pet işletmelerinin parçalı
-          dijital deneyimlerini tek ekosistemde birleştirmek için kuruldu. Mobil
-          uygulama, veteriner paneli, pet market, AI asistan, kasko ve mahalle
-          topluluğu aynı dilde çalışır.
+      <div className="mt-10 max-w-3xl space-y-4 text-lg leading-relaxed text-muted">
+        <p>
+          Mama bittiğinde marketi dolaşmak, gece bir şey olduğunda hangi
+          kliniğin açık olduğunu aramak, patinle girebileceğin bir kafe bulmak…
+          Hepsi bizim de yaşadığımız şeyler.
         </p>
-      </section>
-
-      <section className="mt-10 grid gap-4 md:grid-cols-2">
-        <article className="rounded-[24px] bg-surface p-6 shadow-[var(--shadow-soft)]">
-          <h2 className="text-xl font-extrabold text-primary">Vizyon</h2>
-          <p className="mt-3 text-sm leading-relaxed text-primary/70">
-            Türkiye’nin 81 ilinde pet yaşamını güvenli, erişilebilir ve akıllı
-            hale getiren lider ekosistem olmak.
-          </p>
-        </article>
-        <article className="rounded-[24px] bg-surface p-6 shadow-[var(--shadow-soft)]">
-          <h2 className="text-xl font-extrabold text-primary">Misyon</h2>
-          <p className="mt-3 text-sm leading-relaxed text-primary/70">
-            Pet sahipleri ile klinik, market ve hizmet sağlayıcıları arasında
-            kesintisiz, şeffaf ve insan odaklı dijital köprüler kurmak.
-          </p>
-        </article>
-      </section>
-
-      <section className="mt-10">
-        <h2 className="text-2xl font-extrabold text-primary">Değerler</h2>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {VALUES.map((v) => (
-            <article
-              key={v.title}
-              className="rounded-[24px] bg-surface p-5 shadow-[var(--shadow-soft)]"
-            >
-              <h3 className="font-extrabold text-primary">{v.title}</h3>
-              <p className="mt-2 text-sm text-primary/70">{v.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="mt-10">
-        <h2 className="text-2xl font-extrabold text-primary">İş Ortakları</h2>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-primary/70">
-          Veteriner klinikleri, pet shop’lar, sigorta ve lojistik partnerleriyle
-          büyüyen bir ağ kuruyoruz. İş ortaklığı için veteriner veya market kayıt
-          formlarından başvurabilirsiniz.
+        <p>
+          O yüzden işe mahalleden başladık. Siparişini yakındaki petshop
+          hazırlar, kapında ödersin. Veterinerleri açık olup olmadıklarına göre
+          görürsün. Bir de Sahne var: her gün yeni bir konu, her gece yeni bir
+          yıldız.
         </p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          {["Klinik Ağı", "Market Ağı", "Teknoloji", "Sigorta"].map((p) => (
-            <span
-              key={p}
-              className="rounded-full bg-[#EEE8DF] px-4 py-2 text-sm font-bold text-primary"
-            >
-              {p}
-            </span>
-          ))}
-        </div>
+      </div>
+
+      <section aria-label="Değerlerimiz" className="mt-12 grid gap-4 md:grid-cols-3">
+        {VALUES.map((v) => (
+          <Card key={v.title}>
+            <IconBadge name={v.icon} />
+            <h2 className="mt-4 text-lg font-extrabold text-primary">{v.title}</h2>
+            <p className="mt-1.5 leading-relaxed text-muted">{v.text}</p>
+          </Card>
+        ))}
       </section>
+
+      <div className="mt-12 flex flex-wrap gap-3">
+        <ButtonLink href="/iletisim" size="lg">
+          Bize yaz
+        </ButtonLink>
+        <ButtonLink href="/isletmeler" variant="outline" size="lg">
+          İşletmeler için
+        </ButtonLink>
+      </div>
     </div>
   );
 }

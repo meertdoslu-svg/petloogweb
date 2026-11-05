@@ -6,7 +6,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/"],
+      // /auth is the e-mail confirmation callback — never useful in search.
+      disallow: ["/api/", "/auth/"],
     },
     sitemap: `${SITE.url}/sitemap.xml`,
     host: SITE.url,

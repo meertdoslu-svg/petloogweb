@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
-import { BackgroundDecor } from "@/components/layout/BackgroundDecor";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { LazyCookieBanner } from "@/components/legal/LazyCookieBanner";
@@ -15,45 +14,32 @@ const nunito = Nunito({
   variable: "--font-nunito",
   display: "swap",
   weight: ["400", "600", "700", "800"],
-  preload: true,
-  adjustFontFallback: true,
 });
+
+const TITLE = `${SITE.name} | ${SITE.slogan}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
-  title: {
-    default: `${SITE.name} | ${SITE.slogan}`,
-    template: `%s | ${SITE.name}`,
-  },
-  description:
-    "PetLoog; mobil uygulama, veteriner, pet market, AI, kasko ve mahalle dostu ile evcil dostunuz için tek platform.",
+  title: { default: TITLE, template: `%s | ${SITE.name}` },
+  description: SITE.description,
   applicationName: SITE.name,
   authors: [{ name: SITE.name }],
   creator: SITE.name,
   publisher: SITE.name,
-  keywords: [
-    "PetLoog",
-    "pet uygulaması",
-    "veteriner sistemi",
-    "pet market",
-    "pet kasko",
-    "mahalle dostu",
-  ],
   alternates: { canonical: absoluteUrl("/") },
   openGraph: {
     type: "website",
     locale: "tr_TR",
     url: SITE.url,
     siteName: SITE.name,
-    title: `${SITE.name} | ${SITE.slogan}`,
-    description:
-      "Evcil dostunuz için tek platform. PetLoog kurumsal ekosistemi.",
+    title: TITLE,
+    description: SITE.description,
     images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "PetLoog" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE.name} | ${SITE.slogan}`,
-    description: SITE.slogan,
+    title: TITLE,
+    description: SITE.description,
     images: ["/og-default.png"],
   },
   robots: {
@@ -68,23 +54,25 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#F7F3EC",
+  themeColor: "#F8F4EC",
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="tr">
       <body className={`${nunito.variable} antialiased`}>
+        <a href="#icerik" className="skip-link">
+          İçeriğe geç
+        </a>
         <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
-        <BackgroundDecor />
         <Header />
-        <main className="min-h-[70vh]">{children}</main>
+        <main id="icerik" className="min-h-[60vh]">
+          {children}
+        </main>
         <Footer />
         <LazyCookieBanner />
       </body>

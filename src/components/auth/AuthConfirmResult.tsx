@@ -43,7 +43,7 @@ export function AuthConfirmResult({ status }: AuthConfirmResultProps) {
       <h1 className="text-2xl font-extrabold text-primary">
         {isSuccess ? "E-posta adresiniz doğrulandı" : "Doğrulama bağlantısı geçersiz"}
       </h1>
-      <p className="mt-3 text-sm leading-relaxed text-primary/70">
+      <p className="mt-3 text-sm leading-relaxed text-muted">
         {isSuccess
           ? "Hesabınız başarıyla aktifleştirildi. PetLoog'a dönerek devam edebilirsiniz."
           : "Doğrulama bağlantısı geçersiz veya süresi dolmuş olabilir."}
@@ -52,14 +52,14 @@ export function AuthConfirmResult({ status }: AuthConfirmResultProps) {
       <div className="mt-7 flex w-full flex-col gap-3">
         <a
           href={APP_DEEP_LINK}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent px-6 py-3.5 text-base font-bold text-white shadow-[var(--shadow-btn)] transition hover:brightness-105 active:scale-[0.98]"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-secondary px-6 py-3.5 text-base font-extrabold text-surface transition hover:bg-primary active:scale-[0.98]"
         >
           PetLoog&apos;u Aç
         </a>
         {isSuccess ? (
           <a
             href={WEB_FALLBACK_HREF}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-primary/15 bg-white px-6 py-3 text-sm font-bold text-primary transition hover:bg-white/80"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-line bg-surface px-6 py-3 text-base font-extrabold text-primary transition hover:border-secondary"
           >
             Ana Sayfaya Git
           </a>

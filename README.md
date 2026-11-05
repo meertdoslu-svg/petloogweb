@@ -1,15 +1,7 @@
-# PetLoog Corporate Website
+# PetLoog web sitesi (petloog.com)
 
-Bağımsız kurumsal web sitesi. Mobil uygulamadan import edilmez.
-
-## Stack
-
-- Next.js 15 (App Router)
-- TypeScript (strict)
-- Tailwind CSS 4
-- Framer Motion
-- React Hook Form + Zod
-- Supabase
+Next.js 15 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · Zod.
+Barındırma: Vercel (GitHub `main` dalından).
 
 ## Kurulum
 
@@ -19,27 +11,20 @@ cp .env.example .env.local
 npm run dev
 ```
 
-## Supabase
+## Ortam değişkenleri
 
-1. `supabase/schema.sql` dosyasını Supabase SQL editor’de çalıştırın.
-2. `.env.local` içine URL ve anahtarları ekleyin.
-3. RLS açıktır; yazma işlemleri service role ile sunucu tarafında yapılır.
+Bkz. `.env.example`. Ön kayıt formu için `RESEND_API_KEY` ve `RESEND_FROM`
+gerekir (yalnızca sunucu tarafı; `NEXT_PUBLIC_` öneki KULLANMAYIN).
 
-## Scripts
+## Sayfalar (v1)
 
-- `npm run dev` — geliştirme
-- `npm run build` — production build
-- `npm run start` — production sunucu
-- `npm run lint` — ESLint
+- `/` Ana sayfa · `/sahne` · `/hakkimizda` · `/blog`, `/blog/[slug]`
+- `/isletmeler` Petshop ve veteriner ön kayıt (`?tur=petshop|veteriner`) → `/api/on-kayit` → e-posta (Resend), veritabanına yazmaz
+- `/iletisim` · `/support` (App Store destek adresi; `/destek` ve `/help` aynı içerik)
+- Yasal: `/privacy`, `/terms`, `/kvkk`, `/cerez`, `/yasal`, `/yasal/[slug]` (ör. `/yasal/hesap-silme`, `/yasal/sahne-kurallari`)
 
-## Sayfalar
+Eski konsept adresleri `next.config.ts` içinde 301 ile yönlendirilir.
 
-- `/` Anasayfa (referans tasarım)
-- `/hakkimizda`
-- `/sistemlerimiz`
-- `/moduller/[slug]`
-- `/blog`, `/blog/[slug]`
-- `/iletisim`
-- `/kayit/veteriner`
-- `/kayit/petshop`
-- `/kvkk`, `/gizlilik`, `/cerez`
+## Komutlar
+
+- `npm run dev` · `npm run build` · `npm run start` · `npm run lint`
