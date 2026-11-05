@@ -58,7 +58,7 @@ export function AuthConfirmHashFallback() {
   if (status === "checking") {
     return (
       <div className="mx-auto flex max-w-md flex-col items-center rounded-[28px] bg-surface p-10 text-center shadow-[var(--shadow-card)]">
-        <p className="text-sm font-semibold text-primary/60">Doğrulanıyor...</p>
+        <p className="text-sm font-semibold text-muted">Doğrulanıyor...</p>
       </div>
     );
   }

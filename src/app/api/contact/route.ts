@@ -1,123 +1,92 @@
 import { NextResponse } from "next/server";
+import { escapeHtml, sendEmail } from "@/lib/email/resend";
 import {
   auditLog,
   getClientIp,
   isProductionRuntime,
   rateLimit,
-  sanitizeText,
   securityHeaders,
 } from "@/lib/security";
-import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { contactSchema } from "@/lib/validations/forms";
 
+// İletişim formu → e-posta (info@petloog.com) via Resend, same as /api/on-kayit.
+// Nothing is written to any database.
 export const runtime = "nodejs";
 
-const SUCCESS_MESSAGE =
-  "Mesajınız başarıyla gönderildi. En kısa sürede sizinle iletişime geçeceğiz.";
+const SUCCESS = "Mesajın bize ulaştı. En kısa sürede sana dönüş yapacağız.";
+
+function json(body: object, status = 200) {
+  return NextResponse.json(body, { status, headers: securityHeaders() });
+}
 
 export async function POST(request: Request) {
   const ip = getClientIp(request.headers);
-  const limited = rateLimit(`contact:${ip}`, 5, 60_000);
-  if (!limited.ok) {
-    return NextResponse.json(
-      { ok: false, message: "Çok fazla istek. Lütfen biraz sonra deneyin." },
-      { status: 429, headers: securityHeaders() },
-    );
+  if (!rateLimit(`contact:${ip}`, 5, 10 * 60_000).ok) {
+    return json({ ok: false, message: "Çok fazla deneme yaptın. Birkaç dakika sonra tekrar dene." }, 429);
   }
 
   let body: unknown;
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json(
-      { ok: false, message: "Geçersiz istek gövdesi." },
-      { status: 400, headers: securityHeaders() },
-    );
+    return json({ ok: false, message: "Geçersiz istek." }, 400);
+  }
+
+  // Honeypot → fake success, nothing sent.
+  const raw = body as { website?: unknown };
+  if (typeof raw?.website === "string" && raw.website.length > 0) {
+    auditLog("contact:bot_blocked", { ip });
+    return json({ ok: true, message: SUCCESS });
   }
 
   const parsed = contactSchema.safeParse(body);
   if (!parsed.success) {
-    auditLog("contact:validation_failed", {
-      ip,
-      fields: Object.keys(parsed.error.flatten().fieldErrors),
-    });
-    return NextResponse.json(
-      {
-        ok: false,
-        message: "Form doğrulaması başarısız.",
-        errors: parsed.error.flatten().fieldErrors,
-      },
-      { status: 400, headers: securityHeaders() },
-    );
+    const errors = parsed.error.flatten().fieldErrors as Record<string, string[]>;
+    auditLog("contact:validation_failed", { ip, fields: Object.keys(errors) });
+    return json({ ok: false, message: "Lütfen işaretli alanları kontrol et.", errors }, 400);
   }
 
-  // Honeypot: real users never see/fill this hidden field. Bots that submit
-  // it get a fake success so they don't learn to avoid it — nothing is
-  // stored.
-  if (parsed.data.website) {
-    auditLog("contact:bot_blocked", { ip });
-    return NextResponse.json(
-      { ok: true, message: SUCCESS_MESSAGE },
-      { headers: securityHeaders() },
-    );
+  const d = parsed.data;
+  const rows: [string, string][] = [
+    ["Ad soyad", d.name],
+    ["E-posta", d.email],
+    ["Telefon", d.phone || "-"],
+    ["Konu", d.subject],
+    ["Mesaj", d.message],
+  ];
+  const text = `${rows.map(([k, v]) => `${k}: ${v}`).join("\n")}\n\nGönderim: ${new Date().toISOString()}`;
+  const html = `<h2 style="font-family:sans-serif">Yeni iletişim mesajı</h2>
+<table style="font-family:sans-serif;border-collapse:collapse">${rows
+    .map(
+      ([k, v]) =>
+        `<tr><td style="padding:6px 12px;border:1px solid #E5D8C7;font-weight:bold;vertical-align:top">${escapeHtml(k)}</td><td style="padding:6px 12px;border:1px solid #E5D8C7;white-space:pre-wrap">${escapeHtml(v)}</td></tr>`,
+    )
+    .join("")}</table>`;
+
+  const result = await sendEmail({
+    to: process.env.CONTACT_MAIL_TO || "info@petloog.com",
+    subject: `İletişim: ${d.subject}`.slice(0, 160),
+    text,
+    html,
+    replyTo: d.email,
+  });
+
+  if (result.ok) {
+    auditLog("contact:sent", { ip, id: result.id });
+    return json({ ok: true, message: SUCCESS });
   }
 
-  const payload = {
-    name: sanitizeText(parsed.data.name),
-    email: sanitizeText(parsed.data.email),
-    phone: parsed.data.phone ? sanitizeText(parsed.data.phone) : null,
-    subject: sanitizeText(parsed.data.subject),
-    message: sanitizeText(parsed.data.message),
-    ip,
-    created_at: new Date().toISOString(),
-  };
-
-  // Everything below touches Supabase — wrapped in one try/catch so ANY
-  // failure here (client construction included, not just a clean {error}
-  // from the SDK) always produces a diagnosable server log entry and a
-  // clean, generic JSON response.
-  try {
-    const supabase = getSupabaseServerClient();
-    if (!supabase) {
-      if (isProductionRuntime()) {
-        auditLog("contact:config_missing", { ip });
-        return NextResponse.json(
-          {
-            ok: false,
-            message:
-              "Mesajınızı şu anda alamıyoruz. Lütfen daha sonra tekrar deneyin ya da bize e-posta ile yazın.",
-          },
-          { status: 503, headers: securityHeaders() },
-        );
-      }
-      // Dev-only convenience — never reached in production (see check above).
-      auditLog("contact:dev_supabase_unconfigured", { ip });
-      return NextResponse.json(
-        { ok: true, message: SUCCESS_MESSAGE },
-        { headers: securityHeaders() },
-      );
-    }
-
-    const { error } = await supabase.from("contact_messages").insert(payload);
-    if (error) throw new Error(error.message);
-
-    auditLog("contact:submitted", { ip, email: payload.email });
-
-    return NextResponse.json(
-      { ok: true, message: SUCCESS_MESSAGE },
-      { headers: securityHeaders() },
-    );
-  } catch (err) {
-    auditLog("contact:database_failed", {
-      ip,
-      error: err instanceof Error ? err.message : String(err),
-    });
-    return NextResponse.json(
-      {
-        ok: false,
-        message: "Mesajınız kaydedilemedi. Lütfen tekrar deneyin.",
-      },
-      { status: 500, headers: securityHeaders() },
-    );
+  if (result.reason === "not_configured" && !isProductionRuntime()) {
+    auditLog("contact:dev_email_unconfigured", { ip });
+    return json({ ok: true, message: `${SUCCESS} (dev: RESEND_API_KEY yok, e-posta gönderilmedi)` });
   }
+
+  auditLog("contact:send_failed", { ip, reason: result.reason, detail: result.detail });
+  return json(
+    {
+      ok: false,
+      message: "Mesajını şu an gönderemedik. Biraz sonra tekrar dene ya da info@petloog.com adresine yaz.",
+    },
+    503,
+  );
 }

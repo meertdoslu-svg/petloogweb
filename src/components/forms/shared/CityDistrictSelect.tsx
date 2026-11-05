@@ -3,7 +3,7 @@
 import { TURKEY_CITY_NAMES, getDistrictsForCity } from "@/lib/data/turkeyLocations";
 
 const selectClass =
-  "w-full rounded-2xl border border-primary/10 bg-white px-4 py-3 text-sm text-primary shadow-sm disabled:opacity-50";
+  "w-full min-h-12 rounded-2xl border border-line bg-surface px-4 py-3 text-base text-primary disabled:opacity-60 aria-[invalid=true]:border-danger";
 
 type CityDistrictSelectProps = {
   il: string;
@@ -12,8 +12,6 @@ type CityDistrictSelectProps = {
   onIlceChange: (ilce: string) => void;
   ilError?: string;
   ilceError?: string;
-  ilLabel?: string;
-  ilceLabel?: string;
 };
 
 export function CityDistrictSelect({
@@ -23,39 +21,51 @@ export function CityDistrictSelect({
   onIlceChange,
   ilError,
   ilceError,
-  ilLabel = "İl",
-  ilceLabel = "İlçe",
 }: CityDistrictSelectProps) {
   const districts = getDistrictsForCity(il);
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <label className="block space-y-1.5">
-        <span className="text-sm font-bold text-primary">{ilLabel}</span>
+      <div className="space-y-1.5">
+        <label htmlFor="f-il" className="block font-bold text-primary">
+          İl
+        </label>
         <select
+          id="f-il"
           className={selectClass}
           value={il}
           onChange={(e) => onIlChange(e.target.value)}
+          aria-invalid={Boolean(ilError)}
+          aria-describedby={ilError ? "e-il" : undefined}
         >
-          <option value="">Seçiniz</option>
+          <option value="">Seç</option>
           {TURKEY_CITY_NAMES.map((city) => (
             <option key={city} value={city}>
               {city}
             </option>
           ))}
         </select>
-        {ilError ? <span className="block text-xs text-danger">{ilError}</span> : null}
-      </label>
+        {ilError ? (
+          <p id="e-il" className="text-sm font-bold text-danger">
+            {ilError}
+          </p>
+        ) : null}
+      </div>
 
-      <label className="block space-y-1.5">
-        <span className="text-sm font-bold text-primary">{ilceLabel}</span>
+      <div className="space-y-1.5">
+        <label htmlFor="f-ilce" className="block font-bold text-primary">
+          İlçe
+        </label>
         <select
+          id="f-ilce"
           className={selectClass}
           value={ilce}
           disabled={!il}
           onChange={(e) => onIlceChange(e.target.value)}
+          aria-invalid={Boolean(ilceError)}
+          aria-describedby={ilceError ? "e-ilce" : undefined}
         >
-          <option value="">{il ? "Seçiniz" : "Önce il seçin"}</option>
+          <option value="">{il ? "Seç" : "Önce il seç"}</option>
           {districts.map((district) => (
             <option key={district} value={district}>
               {district}
@@ -63,9 +73,11 @@ export function CityDistrictSelect({
           ))}
         </select>
         {ilceError ? (
-          <span className="block text-xs text-danger">{ilceError}</span>
+          <p id="e-ilce" className="text-sm font-bold text-danger">
+            {ilceError}
+          </p>
         ) : null}
-      </label>
+      </div>
     </div>
   );
 }

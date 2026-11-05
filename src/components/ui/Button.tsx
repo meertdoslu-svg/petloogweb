@@ -1,8 +1,25 @@
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+type Variant = "primary" | "outline" | "ghost";
+type Size = "md" | "lg";
+
+function buttonClass(variant: Variant, size: Size, className?: string) {
+  return cn(
+    "inline-flex min-h-11 items-center justify-center gap-2 rounded-full font-extrabold transition-colors disabled:cursor-not-allowed disabled:opacity-60",
+    size === "md" && "px-5 py-2.5 text-[15px]",
+    size === "lg" && "px-6 py-3.5 text-base",
+    variant === "primary" && "bg-secondary text-surface hover:bg-primary",
+    variant === "outline" &&
+      "border border-line bg-surface text-primary hover:border-secondary",
+    variant === "ghost" && "text-primary hover:bg-line/50",
+    className,
+  );
+}
+
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "secondary" | "ghost" | "outline";
-  size?: "sm" | "md" | "lg";
+  variant?: Variant;
+  size?: Size;
 };
 
 export function Button({
@@ -13,23 +30,26 @@ export function Button({
   ...props
 }: ButtonProps) {
   return (
-    <button
-      type={type}
-      className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-full font-bold transition disabled:cursor-not-allowed disabled:opacity-60",
-        size === "sm" && "px-4 py-2 text-sm",
-        size === "md" && "px-5 py-2.5 text-sm",
-        size === "lg" && "px-6 py-3 text-base",
-        variant === "primary" &&
-          "bg-accent text-white shadow-[var(--shadow-btn)] hover:brightness-105",
-        variant === "secondary" &&
-          "bg-secondary text-white shadow-[var(--shadow-soft)] hover:brightness-105",
-        variant === "outline" &&
-          "border border-primary/15 bg-white text-primary hover:bg-white/80",
-        variant === "ghost" && "bg-transparent text-primary hover:bg-primary/5",
-        className,
-      )}
-      {...props}
-    />
+    <button type={type} className={buttonClass(variant, size, className)} {...props} />
+  );
+}
+
+export function ButtonLink({
+  href,
+  children,
+  variant = "primary",
+  size = "md",
+  className,
+}: {
+  href: string;
+  children: React.ReactNode;
+  variant?: Variant;
+  size?: Size;
+  className?: string;
+}) {
+  return (
+    <Link href={href} className={buttonClass(variant, size, className)}>
+      {children}
+    </Link>
   );
 }

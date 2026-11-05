@@ -60,7 +60,7 @@ export function organizationJsonLd() {
     logo: absoluteUrl("/brand/logo.png"),
     email: SITE.email,
     sameAs: Object.values(SOCIAL_LINKS).filter(Boolean),
-    description: SITE.slogan,
+    description: SITE.description,
   };
 }
 
@@ -70,11 +70,7 @@ export function websiteJsonLd() {
     "@type": "WebSite",
     name: SITE.name,
     url: SITE.url,
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${SITE.url}/blog?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
+    inLanguage: "tr-TR",
   };
 }
 

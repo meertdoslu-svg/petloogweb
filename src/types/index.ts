@@ -30,4 +30,6 @@ export type BlogPost = {
   publishedAt: string;
   coverImage: string;
   readingMinutes: number;
+  /** Local fallback only; Supabase rows are filtered by their own status column. */
+  status?: "draft" | "published";
 };

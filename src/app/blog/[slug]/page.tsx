@@ -62,7 +62,7 @@ export default async function BlogPostPage({ params }: Props) {
       <JsonLd
         data={[
           breadcrumbJsonLd([
-            { name: "Anasayfa", path: "/" },
+            { name: "Ana sayfa", path: "/" },
             { name: "Blog", path: "/blog" },
             { name: post.title, path: `/blog/${post.slug}` },
           ]),
@@ -71,18 +71,18 @@ export default async function BlogPostPage({ params }: Props) {
       />
       <Breadcrumb
         items={[
-          { label: "Anasayfa", href: "/" },
+          { label: "Ana sayfa", href: "/" },
           { label: "Blog", href: "/blog" },
           { label: post.title },
         ]}
       />
 
       <header className="max-w-3xl">
-        <p className="text-sm font-bold text-accent">{post.category}</p>
-        <h1 className="mt-2 text-3xl font-extrabold text-primary md:text-5xl">
+        <p className="text-sm font-extrabold text-secondary">{post.category}</p>
+        <h1 className="mt-2 text-[2rem] font-extrabold leading-tight text-primary md:text-5xl">
           {post.title}
         </h1>
-        <div className="mt-4 flex flex-wrap gap-3 text-sm text-primary/60">
+        <div className="mt-4 flex flex-wrap gap-3 text-sm text-muted">
           <span>{post.author}</span>
           <span>·</span>
           <time dateTime={post.publishedAt}>{post.publishedAt}</time>
@@ -93,7 +93,7 @@ export default async function BlogPostPage({ params }: Props) {
           {post.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-[#EEE8DF] px-3 py-1 text-xs font-bold text-primary"
+              className="rounded-full border border-line bg-surface px-3 py-1 text-sm font-bold text-primary"
             >
               #{tag}
             </span>
@@ -101,11 +101,11 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
       </header>
 
-      <div className="prose-petloog mt-10 max-w-3xl whitespace-pre-line">
+      <div className="mt-10 max-w-3xl whitespace-pre-line text-lg leading-relaxed text-muted">
         {post.content}
       </div>
 
-      <section className="mt-10 rounded-[24px] bg-surface p-5 shadow-[var(--shadow-soft)]">
+      <section className="mt-10 max-w-3xl rounded-3xl border border-line bg-surface p-5">
         <h2 className="text-lg font-extrabold text-primary">Paylaş</h2>
         <div className="mt-3 flex flex-wrap gap-2">
           <ShareLink
@@ -123,21 +123,23 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
       </section>
 
+      {related.length ? (
       <section className="mt-12">
-        <h2 className="text-2xl font-extrabold text-primary">İlgili Yazılar</h2>
+        <h2 className="text-2xl font-extrabold text-primary">İlgili yazılar</h2>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           {related.map((item) => (
             <Link
               key={item.slug}
               href={`/blog/${item.slug}`}
-              className="rounded-[24px] bg-surface p-5 shadow-[var(--shadow-soft)]"
+              className="rounded-3xl border border-line bg-surface p-5"
             >
               <h3 className="font-extrabold text-primary">{item.title}</h3>
-              <p className="mt-2 text-sm text-primary/70">{item.excerpt}</p>
+              <p className="mt-2 text-muted">{item.excerpt}</p>
             </Link>
           ))}
         </div>
       </section>
+      ) : null}
     </article>
   );
 }
@@ -148,7 +150,7 @@ function ShareLink({ href, label }: { href: string; label: string }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="rounded-full bg-[#EEE8DF] px-4 py-2 text-sm font-bold text-primary"
+      className="inline-flex min-h-11 items-center rounded-full border border-line bg-bg px-4 font-bold text-primary"
     >
       {label}
     </a>

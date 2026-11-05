@@ -1,6 +1,10 @@
 import type { BlogPost } from "@/types";
 import { getSupabasePublicServerClient } from "@/lib/supabase/server";
-import { BLOG_POSTS } from "@/lib/blog";
+import { LEGACY_BLOG_SLUGS, PUBLISHED_FALLBACK_POSTS } from "@/lib/blog";
+
+// Old-concept posts stay hidden even if their Supabase row is still
+// "published" (until it is moved to draft from PetLoog Admin).
+const HIDDEN = new Set<string>(LEGACY_BLOG_SLUGS);
 
 // Supabase-backed blog reads (public.blog_posts, published rows only —
 // enforced by both this query and the table's RLS policy). Falls back to
@@ -47,7 +51,7 @@ function rowToPost(row: BlogPostRow): BlogPost {
 
 export async function getPublishedPosts(): Promise<BlogPost[]> {
   const supabase = getSupabasePublicServerClient();
-  if (!supabase) return BLOG_POSTS;
+  if (!supabase) return PUBLISHED_FALLBACK_POSTS;
 
   const { data, error } = await supabase
     .from("blog_posts")
@@ -55,13 +59,14 @@ export async function getPublishedPosts(): Promise<BlogPost[]> {
     .eq("status", "published")
     .order("published_at", { ascending: false });
 
-  if (error || !data) return BLOG_POSTS;
-  return (data as BlogPostRow[]).map(rowToPost);
+  if (error || !data) return PUBLISHED_FALLBACK_POSTS;
+  return (data as BlogPostRow[]).filter((r) => !HIDDEN.has(r.slug)).map(rowToPost);
 }
 
 export async function getPublishedPost(slug: string): Promise<BlogPost | undefined> {
+  if (HIDDEN.has(slug)) return undefined;
   const supabase = getSupabasePublicServerClient();
-  if (!supabase) return BLOG_POSTS.find((p) => p.slug === slug);
+  if (!supabase) return PUBLISHED_FALLBACK_POSTS.find((p) => p.slug === slug);
 
   const { data, error } = await supabase
     .from("blog_posts")
@@ -70,7 +75,7 @@ export async function getPublishedPost(slug: string): Promise<BlogPost | undefin
     .eq("slug", slug)
     .maybeSingle();
 
-  if (error) return BLOG_POSTS.find((p) => p.slug === slug);
+  if (error) return PUBLISHED_FALLBACK_POSTS.find((p) => p.slug === slug);
   if (!data) return undefined;
   return rowToPost(data as BlogPostRow);
 }

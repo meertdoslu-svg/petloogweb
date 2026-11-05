@@ -10,7 +10,7 @@ export function Breadcrumb({
 }) {
   return (
     <nav aria-label="Breadcrumb" className={cn("mb-6", className)}>
-      <ol className="flex flex-wrap items-center gap-2 text-sm text-primary/60">
+      <ol className="flex flex-wrap items-center gap-2 text-sm text-muted">
         {items.map((item, index) => {
           const last = index === items.length - 1;
           return (

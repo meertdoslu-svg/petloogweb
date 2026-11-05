@@ -10,7 +10,7 @@ export const metadata = buildMetadata({
     "PetLoog Gizlilik Politikası — kişisel verilerin toplanması, kullanılması, paylaşılması, saklanması, kullanıcı hakları ve hesap silme süreçleri.",
   path: "/gizlilik",
   // /privacy and /gizlilik serve the same document; canonicalize to /privacy
-  // (the URL used for App Store / Google Play listings) to avoid duplicate
+  // (the URL used for App Store listing) to avoid duplicate
   // indexing while keeping /gizlilik reachable for Turkish users.
   canonicalPath: "/privacy",
 });
@@ -23,7 +23,7 @@ export default function GizlilikPage() {
     <>
       <JsonLd
         data={breadcrumbJsonLd([
-          { name: "Anasayfa", path: "/" },
+          { name: "Ana sayfa", path: "/" },
           { name: "Gizlilik", path: "/gizlilik" },
         ])}
       />

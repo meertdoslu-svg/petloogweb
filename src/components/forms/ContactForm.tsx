@@ -64,7 +64,7 @@ export function ContactForm() {
         </Field>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
-        <Field label="Telefon" error={errors.phone?.message}>
+        <Field label="Telefon (isteğe bağlı)" error={errors.phone?.message}>
           <input className={inputClass} {...register("phone")} />
         </Field>
         <Field label="Konu" error={errors.subject?.message}>
@@ -78,18 +78,18 @@ export function ContactForm() {
         type="text"
         tabIndex={-1}
         autoComplete="off"
-        className="hidden"
+        className="absolute -left-[9999px] h-px w-px"
         aria-hidden
         {...register("website")}
       />
       <Button type="submit" disabled={status === "loading"} size="lg">
-        {status === "loading" ? "Gönderiliyor..." : "Mesaj Gönder"}
+        {status === "loading" ? "Gönderiliyor…" : "Mesajı gönder"}
       </Button>
       {message ? (
         <p
           role="status"
           className={
-            status === "success" ? "text-sm text-success" : "text-sm text-danger"
+            status === "success" ? "font-bold text-success" : "font-bold text-danger"
           }
         >
           {message}
@@ -110,12 +110,12 @@ function Field({
 }) {
   return (
     <label className="block space-y-1.5">
-      <span className="text-sm font-bold text-primary">{label}</span>
+      <span className="font-bold text-primary">{label}</span>
       {children}
-      {error ? <span className="block text-xs text-danger">{error}</span> : null}
+      {error ? <span className="block text-sm font-bold text-danger">{error}</span> : null}
     </label>
   );
 }
 
 const inputClass =
-  "w-full rounded-2xl border border-primary/10 bg-white px-4 py-3 text-sm text-primary shadow-sm placeholder:text-primary/35";
+  "w-full min-h-12 rounded-2xl border border-line bg-surface px-4 py-3 text-base text-primary placeholder:text-muted/60";

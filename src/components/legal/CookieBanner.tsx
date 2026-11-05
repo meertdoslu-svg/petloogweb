@@ -10,20 +10,27 @@ export function CookieBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) setVisible(true);
+    try {
+      if (!localStorage.getItem(STORAGE_KEY)) setVisible(true);
+    } catch {
+      // Storage blocked — don't nag on every page.
+    }
   }, []);
 
   const accept = (analytics: boolean) => {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        necessary: true,
-        analytics,
-        marketing: false,
-        at: new Date().toISOString(),
-      }),
-    );
+    try {
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          necessary: true,
+          analytics,
+          marketing: false,
+          at: new Date().toISOString(),
+        }),
+      );
+    } catch {
+      // ignore
+    }
     setVisible(false);
   };
 
@@ -31,27 +38,23 @@ export function CookieBanner() {
 
   return (
     <div
-      role="dialog"
+      role="region"
       aria-label="Çerez tercihleri"
-      className="fixed inset-x-0 bottom-0 z-[60] border-t border-primary/10 bg-[#F7F3EC]/95 p-4 shadow-[0_-12px_40px_-12px_rgba(74,42,23,0.25)] backdrop-blur-md md:p-5"
+      className="fixed inset-x-3 bottom-3 z-[60] rounded-3xl border border-line bg-surface p-4 shadow-[var(--shadow-card)] md:inset-x-auto md:right-5 md:bottom-5 md:max-w-md md:p-5"
     >
-      <div className="container-site flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <p className="max-w-2xl text-sm leading-relaxed text-primary/75">
-          Deneyiminizi geliştirmek için zorunlu çerezler kullanıyoruz. Analitik
-          çerezler için onayınıza ihtiyaç duyarız. Detaylar için{" "}
-          <Link href="/cerez" className="font-bold text-accent underline">
-            Çerez Politikası
-          </Link>
-          &apos;nı inceleyin.
-        </p>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={() => accept(false)}>
-            Yalnızca Zorunlu
-          </Button>
-          <Button size="sm" onClick={() => accept(true)}>
-            Tümünü Kabul Et
-          </Button>
-        </div>
+      <p className="text-sm leading-relaxed text-muted">
+        Siteyi çalıştırmak için zorunlu çerezler kullanıyoruz. Analitik çerezler
+        için onayını isteriz. Ayrıntılar{" "}
+        <Link href="/cerez" className="font-extrabold text-primary underline">
+          Çerez politikası
+        </Link>
+        &apos;nda.
+      </p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button variant="outline" onClick={() => accept(false)}>
+          Yalnızca zorunlu
+        </Button>
+        <Button onClick={() => accept(true)}>Kabul et</Button>
       </div>
     </div>
   );

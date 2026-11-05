@@ -18,7 +18,7 @@ export default function CerezPage() {
     <>
       <JsonLd
         data={breadcrumbJsonLd([
-          { name: "Anasayfa", path: "/" },
+          { name: "Ana sayfa", path: "/" },
           { name: "Çerez Politikası", path: "/cerez" },
         ])}
       />

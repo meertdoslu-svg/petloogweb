@@ -18,7 +18,7 @@ export default function KvkkPage() {
     <>
       <JsonLd
         data={breadcrumbJsonLd([
-          { name: "Anasayfa", path: "/" },
+          { name: "Ana sayfa", path: "/" },
           { name: "KVKK", path: "/kvkk" },
         ])}
       />

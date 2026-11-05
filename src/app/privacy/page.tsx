@@ -19,7 +19,7 @@ export default function PrivacyPage() {
     <>
       <JsonLd
         data={breadcrumbJsonLd([
-          { name: "Anasayfa", path: "/" },
+          { name: "Ana sayfa", path: "/" },
           { name: "Gizlilik Politikası", path: "/privacy" },
         ])}
       />
