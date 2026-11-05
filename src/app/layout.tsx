@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Nunito } from "next/font/google";
+import localFont from "next/font/local";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { LazyCookieBanner } from "@/components/legal/LazyCookieBanner";
@@ -9,11 +9,19 @@ import { organizationJsonLd, websiteJsonLd } from "@/lib/seo";
 import { absoluteUrl } from "@/lib/utils";
 import "./globals.css";
 
-const nunito = Nunito({
-  subsets: ["latin", "latin-ext"],
+// Self-hosted Nunito (SIL OFL 1.1 — see ./fonts/nunito/OFL.txt). Static
+// 400/600/700/800 instances subset to Google Fonts' latin + latin-ext
+// unicode ranges (full Turkish coverage). Bundled in the repo so the build
+// never depends on fetching Google Fonts.
+const nunito = localFont({
+  src: [
+    { path: "./fonts/nunito/Nunito-400.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/nunito/Nunito-600.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/nunito/Nunito-700.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/nunito/Nunito-800.woff2", weight: "800", style: "normal" },
+  ],
   variable: "--font-nunito",
   display: "swap",
-  weight: ["400", "600", "700", "800"],
 });
 
 const TITLE = `${SITE.name} | ${SITE.slogan}`;

@@ -52,7 +52,7 @@ export function middleware(request: NextRequest) {
       `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"}`,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
-      "font-src 'self' data: https://fonts.gstatic.com",
+      "font-src 'self' data:",
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
       "frame-src 'self' https://maps.google.com https://www.google.com",
       "base-uri 'self'",
